@@ -1,0 +1,9 @@
+name: IdentityVerification
+version: '${project.version}'
+main: site.deercloud.identityverification.IdentityVerification
+api-version: 1.13
+prefix: IV
+load: STARTUP
+authors: [ Luming ]
+description: 实名认证添加白名单、正版玩家邀请非正版注册管理。
+website: https://blog.deercloud.site
