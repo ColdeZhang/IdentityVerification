@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ProfileDAO {
-    public static void createTable(Connection connection) throws SQLException {
+    public static void createTable() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS profile (\n"
                 + "	uuid text PRIMARY KEY,\n"                           // UUID
                 + " belong_to text NOT NULL,\n"                         // 所属User
@@ -19,13 +19,13 @@ public class ProfileDAO {
                 + " uploadableTextures_signature text ,\n"      // 可上传的材质签名
                 + "	update_time integer NOT NULL\n"                     // 数据更新时间
                 + ");";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.execute();
     }
 
-    public static void insert(Connection connection, Profile profile) throws SQLException {
+    public static void insert(Profile profile) throws SQLException {
         String sql = "INSERT INTO profile(uuid,belong_to,name,textures,textures_signature,uploadableTextures,uploadableTextures_signature,update_time) VALUES(?,?,?,?,?,?,?,?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, profile.uuid);
         preparedStatement.setString(2, profile.belongTo);
         preparedStatement.setString(3, profile.name);
@@ -37,9 +37,9 @@ public class ProfileDAO {
         preparedStatement.executeUpdate();
     }
 
-    public static void update(Connection connection, Profile profile) throws SQLException {
+    public static void update(Profile profile) throws SQLException {
         String sql = "UPDATE profile SET name = ?, textures = ?, textures_signature = ?, uploadableTextures = ?, uploadableTextures_signature = ?, update_time = ? WHERE uuid = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, profile.name);
         preparedStatement.setString(2, profile.textures);
         preparedStatement.setString(3, profile.textures_signature);
@@ -50,9 +50,9 @@ public class ProfileDAO {
         preparedStatement.executeUpdate();
     }
 
-    public static Profile selectByUuid(Connection connection, String uuid) throws SQLException {
+    public static Profile selectByUuid(String uuid) throws SQLException {
         String sql = "SELECT * FROM profile WHERE uuid = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, uuid);
         Profile profile = new Profile();
         if (preparedStatement.executeQuery().next()) {
@@ -68,9 +68,9 @@ public class ProfileDAO {
         return null;
     }
 
-    public static ArrayList<Profile> selectAllByBelongTo(Connection connection, String belongTo) throws SQLException {
+    public static ArrayList<Profile> selectAllByBelongTo(String belongTo) throws SQLException {
         String sql = "SELECT * FROM profile WHERE belong_to = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, belongTo);
         ArrayList<Profile> profiles = new ArrayList<>();
         while (preparedStatement.executeQuery().next()) {
@@ -87,9 +87,9 @@ public class ProfileDAO {
         return profiles;
     }
 
-    public static Profile selectByName(Connection connection, String name) throws SQLException {
+    public static Profile selectByName(String name) throws SQLException {
         String sql = "SELECT * FROM profile WHERE name = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, name);
         Profile profile = new Profile();
         if (preparedStatement.executeQuery().next()) {

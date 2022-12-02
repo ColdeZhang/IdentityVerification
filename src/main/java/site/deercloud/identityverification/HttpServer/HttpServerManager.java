@@ -145,6 +145,7 @@ public class HttpServerManager {
 
     public static Map<String,String> getQuery(HttpExchange exchange){
         String query_string = exchange.getRequestURI().getQuery();
+        MyLogger.debug("Query String: " + query_string);
         Map<String,String> result = new HashMap<>();
         if(query_string== null || query_string.trim().length() == 0) {
             return result;

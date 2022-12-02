@@ -3,7 +3,7 @@ package site.deercloud.identityverification.SQLite;
 import java.sql.*;
 
 public class BanListDAO {
-    public static void createTable(Connection con) throws SQLException {
+    public static void createTable() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS ban_list (\n"
                 + " id integer PRIMARY KEY AUTOINCREMENT ,\n"   // ID
                 + "	uuid text NOT NULL ,\n"                     // UUID
@@ -13,13 +13,13 @@ public class BanListDAO {
                 + "	create_time integer NOT NULL\n"             // 数据创建时间
                 + ");";
         Statement stat = null;
-        stat = con.createStatement();
+        stat = SqlManager.session.createStatement();
         stat.executeUpdate(sql);
     }
 
-    public static void insert(Connection con, String uuid, String name, long banTime, String banReason, long createTime) throws SQLException {
+    public static void insert(String uuid, String name, long banTime, String banReason, long createTime) throws SQLException {
         String sql = "INSERT INTO ban_list(uuid,name,ban_time,ban_reason,create_time) VALUES(?,?,?,?,?)";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, uuid);
         prep.setString(2, name);
         prep.setLong(3, banTime);
@@ -28,9 +28,9 @@ public class BanListDAO {
         prep.executeUpdate();
     }
 
-    public static Integer isBanned(Connection con, String uuid) throws SQLException {
+    public static Integer isBanned(String uuid) throws SQLException {
         String sql = "SELECT ban_time FROM ban_list WHERE uuid = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, uuid);
         ResultSet rs = prep.executeQuery();
         while (rs.next()) {
@@ -41,9 +41,9 @@ public class BanListDAO {
         return -1;
     }
 
-    public static String getBanReasonById(Connection con, Integer id) throws SQLException {
+    public static String getBanReasonById(Integer id) throws SQLException {
         String sql = "SELECT ban_reason FROM ban_list WHERE id = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setInt(1, id);
         ResultSet rs = prep.executeQuery();
         if (rs.next()) {
@@ -52,9 +52,9 @@ public class BanListDAO {
         return null;
     }
 
-    public static long getBanTimeById(Connection con, Integer id) throws SQLException {
+    public static long getBanTimeById( Integer id) throws SQLException {
         String sql = "SELECT ban_time FROM ban_list WHERE id = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setInt(1, id);
         ResultSet rs = prep.executeQuery();
         if (rs.next()) {
@@ -63,9 +63,9 @@ public class BanListDAO {
         return -1;
     }
 
-    public static String getNameById(Connection con, Integer id) throws SQLException {
+    public static String getNameById(Integer id) throws SQLException {
         String sql = "SELECT name FROM ban_list WHERE id = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setInt(1, id);
         ResultSet rs = prep.executeQuery();
         if (rs.next()) {

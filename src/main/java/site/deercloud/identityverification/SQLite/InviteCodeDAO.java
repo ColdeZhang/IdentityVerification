@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class InviteCodeDAO {
-    public static void createTable(Connection con) throws SQLException {
+    public static void createTable() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS invite_code (\n"
                 + "	code text PRIMARY KEY,\n"              // 邀请码
                 + "	inviter_uuid text NOT NULL,\n"         // 所有者
@@ -16,13 +16,13 @@ public class InviteCodeDAO {
                 + "	use_time integer NOT NULL\n"           // 使用时间
                 + ");";
         Statement stat = null;
-        stat = con.createStatement();
+        stat = SqlManager.session.createStatement();
         stat.executeUpdate(sql);
     }
 
-    public static void insert(Connection con, String code, String inviterUUID, boolean isUsed, long useTime) throws SQLException {
+    public static void insert(String code, String inviterUUID, boolean isUsed, long useTime) throws SQLException {
         String sql = "INSERT INTO invite_code(code,inviter_uuid,create_time,is_used,use_time) VALUES(?,?,?,?,?)";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, code);
         prep.setString(2, inviterUUID);
         prep.setLong(3, System.currentTimeMillis());
@@ -31,9 +31,9 @@ public class InviteCodeDAO {
         prep.executeUpdate();
     }
 
-    public static String getInviterUUID(Connection con, String code) throws SQLException {
+    public static String getInviterUUID(String code) throws SQLException {
         String sql = "SELECT inviter_uuid FROM invite_code WHERE code = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, code);
         ResultSet rs = prep.executeQuery();
         if (rs.next()) {
@@ -42,29 +42,29 @@ public class InviteCodeDAO {
         return null;
     }
 
-    public static boolean isValid(Connection con, String code) throws SQLException {
+    public static boolean isUsed(String code) throws SQLException {
         String sql = "SELECT is_used FROM invite_code WHERE code = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, code);
         ResultSet rs = prep.executeQuery();
         if (rs.next()) {
-            return !rs.getBoolean("is_used");
+            return rs.getBoolean("is_used");
         }
-        return false;
+        return true;
     }
 
-    public static void setUsed(Connection con, String code, boolean isUsed, long useTime) throws SQLException {
+    public static void setUsed(String code, boolean isUsed, long useTime) throws SQLException {
         String sql = "UPDATE invite_code SET is_used = ?,use_time = ? WHERE code = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setBoolean(1, isUsed);
         prep.setLong(2, useTime);
         prep.setString(3, code);
         prep.executeUpdate();
     }
 
-    public static long getUseTime(Connection con, String code) throws SQLException {
+    public static long getUseTime(String code) throws SQLException {
         String sql = "SELECT use_time FROM invite_code WHERE code = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, code);
         ResultSet rs = prep.executeQuery();
         if (rs.next()) {
@@ -73,9 +73,9 @@ public class InviteCodeDAO {
         return 0;
     }
 
-    public static Set<InviteCode> selectByInviter(Connection con, String inviterUUID) throws SQLException {
+    public static Set<InviteCode> selectByInviter(String inviterUUID) throws SQLException {
         String sql = "SELECT * FROM invite_code WHERE inviter_uuid = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, inviterUUID);
         ResultSet rs = prep.executeQuery();
         Set<InviteCode> inviteCodes = new HashSet<>();

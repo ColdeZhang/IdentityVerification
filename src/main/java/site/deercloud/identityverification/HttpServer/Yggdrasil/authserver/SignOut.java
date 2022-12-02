@@ -31,17 +31,16 @@ public class SignOut implements HttpHandler {
             JSONObject request = getBody(exchange);
             String username = request.getString("username");
             String password = request.getString("password");
-            Connection connection = SqlManager.getConnection();
 
-            if (!UserDAO.checkPassword(connection, username, password)) {
+            if (!UserDAO.checkPassword(username, password)) {
                 Response.err_password_wrong(exchange, null);
                 return;
             }
-            User user = UserDAO.selectByEmail(connection, username);
+            User user = UserDAO.selectByEmail(username);
             // 吊销用户的所有令牌
-            ArrayList<Profile> profiles = ProfileDAO.selectAllByBelongTo(connection, user.uuid);
+            ArrayList<Profile> profiles = ProfileDAO.selectAllByBelongTo(user.uuid);
             for (Profile profile : profiles) {
-                TokenDAO.deleteByProfileUUID(connection, profile.uuid);
+                TokenDAO.deleteByProfileUUID(profile.uuid);
             }
             Response.success_no_content(exchange);
         } catch(SQLException | IOException e) {

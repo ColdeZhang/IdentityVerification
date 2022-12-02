@@ -31,17 +31,15 @@ public final class IdentityVerification extends JavaPlugin {
 
         // 初始化数据表
         try {
-            Connection connection = SqlManager.getConnection();
-            SqlManager.createTables(connection);
-            if (!UserDAO.isEmailExist(connection, "console@mc.com")) {
+            sqlManager = new SqlManager();
+            if (!UserDAO.isEmailExist("console@mc.com")) {
                 // 生成控制台用户
                 User consoleUser = new User();
                 consoleUser.email = "console@mc.com";
                 consoleUser.uuid = UUID.randomUUID().toString();
                 consoleUser.password = String.valueOf("123456".hashCode());
-                UserDAO.insert(connection, consoleUser);
+                UserDAO.insert(consoleUser);
             }
-            connection.close();
         } catch (SQLException e) {
             MyLogger.debug(e);
         }
@@ -91,9 +89,13 @@ public final class IdentityVerification extends JavaPlugin {
     public static AFKTracker getAfkTracker() {
         return afkTracker;
     }
+    public static SqlManager getSqlManager() {
+        return sqlManager;
+    }
 
     private HttpServerManager httpServerManager;
     private ConfigManager configManager;
+    private static SqlManager sqlManager;
     private static GameSessionCache gameSessionCache;
     private static AFKTracker afkTracker;
     private static IdentityVerification instance;

@@ -3,26 +3,20 @@ package site.deercloud.identityverification.HttpServer.Api.Register;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.apache.commons.lang.StringEscapeUtils;
 import site.deercloud.identityverification.Controller.EmailCodeCache;
 import site.deercloud.identityverification.HttpServer.model.Profile;
 import site.deercloud.identityverification.HttpServer.model.Texture;
 import site.deercloud.identityverification.HttpServer.model.User;
-import site.deercloud.identityverification.IdentityVerification;
 import site.deercloud.identityverification.SQLite.InviteCodeDAO;
 import site.deercloud.identityverification.SQLite.InviteRelationDAO;
 import site.deercloud.identityverification.SQLite.ProfileDAO;
 import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.sql.Connection;
 import java.util.UUID;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
-import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
 public class Registration implements HttpHandler {
@@ -46,6 +40,8 @@ public class Registration implements HttpHandler {
 
             String profile_name = jsonObject.getString("profile_name");
 
+            // TODO: 验证邮箱唯一性
+
             // 验证邮箱验证码
             if (EmailCodeCache.isEmailCodeExpired(email)) {
                 jsonResponse(exchange, 500, "邮箱验证码无效，请重新获取。", null);
@@ -61,18 +57,17 @@ public class Registration implements HttpHandler {
                 return;
             }
             // 验证邀请码可用性
-            Connection connection = getConnection();
-            if (!InviteCodeDAO.isValid(connection, inviteCode)) {
+            if (InviteCodeDAO.isUsed(inviteCode)) {
                 jsonResponse(exchange, 400, "邀请码不存在或已被使用！", null);
                 return;
             }
             String new_uuid = UUID.randomUUID().toString();
-            String inviteCodeOwner = InviteCodeDAO.getInviterUUID(connection, inviteCode);
+            String inviteCodeOwner = InviteCodeDAO.getInviterUUID(inviteCode);
             // 创建邀请关系
-            InviteRelationDAO.insert(connection, new_uuid, inviteCodeOwner, System.currentTimeMillis());
+            InviteRelationDAO.insert(new_uuid, inviteCodeOwner, System.currentTimeMillis());
             MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + new_uuid);
             // 标记邀请码已使用
-            InviteCodeDAO.setUsed(connection, inviteCode, true, System.currentTimeMillis());
+            InviteCodeDAO.setUsed(inviteCode, true, System.currentTimeMillis());
             MyLogger.debug("邀请码已标记为已使用：" + inviteCode);
 
             // 创建用户
@@ -80,7 +75,7 @@ public class Registration implements HttpHandler {
             user.uuid = new_uuid;
             user.email = email;
             user.password = password;
-            UserDAO.insert(connection, user);
+            UserDAO.insert(user);
             MyLogger.debug("用户注册成功：" + user.uuid);
 
             // 创建一个默认角色
@@ -91,7 +86,7 @@ public class Registration implements HttpHandler {
             Texture texture = Texture.newDefault(profile.uuid);
             profile.textures = texture.serialWithBase64();
             profile.textures_signature = texture.sign();
-            ProfileDAO.insert(connection, profile);
+            ProfileDAO.insert(profile);
             MyLogger.debug("角色创建成功：" + profile.uuid);
 
             jsonResponse(exchange, 200, "注册成功！", null);

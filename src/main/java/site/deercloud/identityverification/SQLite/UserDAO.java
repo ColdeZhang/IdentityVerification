@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class UserDAO {
-    public static void createTable(Connection con) throws SQLException {
+    public static void createTable() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS user (\n"
                 + "	uuid text PRIMARY KEY,\n"           // UUID
                 + "	email text NOT NULL,\n"             // 邮箱
@@ -17,13 +17,13 @@ public class UserDAO {
                 + " update_time integer NOT NULL\n"     // 数据更新时间
                 + ");";
         Statement stat;
-        stat = con.createStatement();
+        stat = SqlManager.session.createStatement();
         stat.executeUpdate(sql);
     }
 
-    public static void insert(Connection con, User user) throws SQLException {
+    public static void insert(User user) throws SQLException {
         String sql = "INSERT INTO user(uuid, email, password, create_time, update_time) VALUES(?,?,?,?,?)";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, user.uuid);
         prep.setString(2, user.email);
         prep.setString(3, user.password);
@@ -32,9 +32,9 @@ public class UserDAO {
         prep.executeUpdate();
     }
 
-    public static void update(Connection con, User user) throws SQLException {
+    public static void update(User user) throws SQLException {
         String sql = "UPDATE user SET email = ?, password = ?, update_time = ? WHERE uuid = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, user.email);
         prep.setString(2, user.password);
         prep.setLong(3, System.currentTimeMillis());
@@ -42,16 +42,16 @@ public class UserDAO {
         prep.executeUpdate();
     }
 
-    public static void delete(Connection con, String uuid) throws SQLException {
+    public static void delete(String uuid) throws SQLException {
         String sql = "DELETE FROM user WHERE uuid = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, uuid);
         prep.executeUpdate();
     }
 
-    public static User selectByUuid(Connection con, String uuid) throws SQLException {
+    public static User selectByUuid(String uuid) throws SQLException {
         String sql = "SELECT * FROM user WHERE uuid = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, uuid);
         User user = new User();
         user.uuid = uuid;
@@ -62,9 +62,9 @@ public class UserDAO {
         return user;
     }
 
-    public static User selectByEmail(Connection con, String email) throws SQLException {
+    public static User selectByEmail(String email) throws SQLException {
         String sql = "SELECT * FROM user WHERE email = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, email);
         if (prep.executeQuery().next()) {
             User user = new User();
@@ -79,9 +79,9 @@ public class UserDAO {
         }
     }
 
-    public static Boolean checkPassword(Connection con, String email, String password) throws SQLException {
+    public static Boolean checkPassword(String email, String password) throws SQLException {
         String sql = "SELECT * FROM user WHERE email = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         if (prep.executeQuery().next()) {
             return prep.executeQuery().getString("password").equals(password);
         } else {
@@ -89,9 +89,9 @@ public class UserDAO {
         }
     }
 
-    public static Boolean isEmailExist(Connection con, String email) throws SQLException {
+    public static Boolean isEmailExist(String email) throws SQLException {
         String sql = "SELECT count(*) FROM user WHERE email = ?";
-        PreparedStatement prep = con.prepareStatement(sql);
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, email);
         return prep.executeQuery().getInt(1) > 0;
     }

@@ -25,6 +25,8 @@ public class GetEmailCode implements HttpHandler {
             JSONObject request = getBody(exchange);
             String email = request.getString("email");
 
+            // TODO: 验证邮箱唯一性
+
             if (!EmailCodeCache.isEmailCodeExpired(email)) {
                 jsonResponse(exchange, 500, "禁止频繁操作！", null);
                 return;

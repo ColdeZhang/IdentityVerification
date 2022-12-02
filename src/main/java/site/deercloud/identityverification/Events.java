@@ -21,15 +21,14 @@ public class Events implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) throws SQLException {
         Player player = event.getPlayer();
         String uuid = player.getUniqueId().toString();
-        Connection connection = SqlManager.getConnection();
-        if (!WhiteListDAO.isUuidInWhiteList(connection, uuid)) {
+        if (!WhiteListDAO.isUuidInWhiteList(uuid)) {
             player.kickPlayer("你没有完成白名单实名认证，请前往 " + configManager.getHomePageUrl() + " 进行认证。");
         }
-        Integer ban_record_id = BanListDAO.isBanned(connection, uuid);
+        Integer ban_record_id = BanListDAO.isBanned(uuid);
         if (ban_record_id > 0) {
-            String ban_reason = BanListDAO.getBanReasonById(connection, ban_record_id);
+            String ban_reason = BanListDAO.getBanReasonById(ban_record_id);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String ban_time = sdf.format(BanListDAO.getBanTimeById(connection, ban_record_id));
+            String ban_time = sdf.format(BanListDAO.getBanTimeById(ban_record_id));
             player.kickPlayer("你已被封禁，请联系管理员。原因：[ " + ban_reason + " ]" + " 至：" + ban_time);
         }
         GameSessionCache.addSession(event.getPlayer().getUniqueId());

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
-import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.HttpServer.model.Response.*;
 
 public class Authenticate implements HttpHandler {
@@ -42,12 +41,11 @@ public class Authenticate implements HttpHandler {
             String agent_name       = agent.getString("name");
             String agent_version    = agent.getString("version");
 
-            Connection connection = getConnection();
 
-            if (!UserDAO.checkPassword(connection, username, password)) {
+            if (!UserDAO.checkPassword(username, password)) {
                 err_password_wrong(exchange, "密码错误，或短时间内多次登录失败而被暂时禁止登录");
             }
-            User user = UserDAO.selectByEmail(connection, username);
+            User user = UserDAO.selectByEmail(username);
 
             if (clientToken == null) {
                 clientToken = UUID.randomUUID().toString();
@@ -65,14 +63,14 @@ public class Authenticate implements HttpHandler {
             // 若用户没有任何角色，则为空；
             // 若用户仅有一个角色，那么通常绑定到该角色；
             // 若用户有多个角色，通常为空，以便客户端进行选择。也就是说如果绑定的角色为空，则需要客户端进行角色选择。
-            ArrayList<Profile> profiles = ProfileDAO.selectAllByBelongTo(connection, user.uuid);
+            ArrayList<Profile> profiles = ProfileDAO.selectAllByBelongTo(user.uuid);
             if (profiles.size() == 1) {
                 profile = profiles.get(0);
                 token.profileUUID = profile.uuid;
             } else {
                 token.profileUUID = "";
             }
-            TokenDAO.insert(connection, token);
+            TokenDAO.insert(token);
 
             JSONArray availableProfiles = new JSONArray();
             for (Profile p : profiles) {

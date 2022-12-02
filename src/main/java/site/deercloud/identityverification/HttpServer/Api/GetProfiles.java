@@ -31,10 +31,9 @@ public class GetProfiles implements HttpHandler {
                 Response.success_no_content(exchange);
                 return;
             }
-            Connection connection = SqlManager.getConnection();
             ArrayList<Profile> profiles = new ArrayList<>();
             for (int i = 0; i < profiles_json.size(); i++) {
-                Profile profile = ProfileDAO.selectByName(connection, profiles_json.getString(i));
+                Profile profile = ProfileDAO.selectByName(profiles_json.getString(i));
                 if (profile != null) {
                     profiles.add(profile);
                 }

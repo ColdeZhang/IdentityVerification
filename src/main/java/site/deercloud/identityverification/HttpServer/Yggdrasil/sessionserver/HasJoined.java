@@ -32,7 +32,6 @@ public class HasJoined implements HttpHandler {
             String serverId = query.get("serverId");
             String ip = query.get("ip");
 
-            Connection connection = SqlManager.getConnection();
 
             // 验证缓存令牌有效性
             if (HttpServerManager.getSessionCache().verifyIsExpire(serverId, ip)) {
@@ -41,13 +40,13 @@ public class HasJoined implements HttpHandler {
             }
             // 获取缓存令牌对应令牌
             String accessToken = HttpServerManager.getSessionCache().getToken(serverId);
-            Token token = TokenDAO.selectByAccessToken(connection, accessToken);
+            Token token = TokenDAO.selectByAccessToken(accessToken);
             if (token == null || token.profileUUID == null || !token.profileUUID.equals(username)) {
                 Response.success_no_content(exchange);
                 return;
             }
             // 获取令牌对应的角色
-            Profile profile = ProfileDAO.selectByUuid(connection, token.profileUUID);
+            Profile profile = ProfileDAO.selectByUuid(token.profileUUID);
             if (profile == null) {
                 Response.success_no_content(exchange);
                 return;

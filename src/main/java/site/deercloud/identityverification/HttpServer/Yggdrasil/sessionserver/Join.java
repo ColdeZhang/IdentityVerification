@@ -30,8 +30,7 @@ public class Join implements HttpHandler {
             String selectedProfile = request.getString("selectedProfile");
             String serverId = request.getString("serverId");
 
-            Connection connection = SqlManager.getConnection();
-            Token token = TokenDAO.selectByAccessToken(connection, accessToken);
+            Token token = TokenDAO.selectByAccessToken(accessToken);
             if (token == null || token.profileUUID == null || !token.profileUUID.equals(selectedProfile)){
                 Response.err_invalid_token(exchange, "无效的令牌", "无效的令牌");
                 return;

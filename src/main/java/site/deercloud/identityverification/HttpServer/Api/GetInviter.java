@@ -15,7 +15,6 @@ import java.util.Map;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
-import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
 public class GetInviter implements HttpHandler {
@@ -31,16 +30,15 @@ public class GetInviter implements HttpHandler {
 
             Map<String, String> params = getQuery(exchange);
 
-            Connection connection = getConnection();
             String uuid = params.get("uuid");
-            String inviter_uuid = InviteRelationDAO.getInviterUUID(connection, uuid);
+            String inviter_uuid = InviteRelationDAO.getInviterUUID(uuid);
             if (inviter_uuid == null) {
                 jsonResponse(exchange, 400, "找不到邀请者，这可能是个正版玩家。", null);
             }
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("inviter_uuid", inviter_uuid);
-            jsonObject.put("inviter_name", UserDAO.selectByUuid(connection, inviter_uuid).uuid);
+            jsonObject.put("inviter_name", UserDAO.selectByUuid(inviter_uuid).uuid);
 
             jsonResponse(exchange, 200, "OK", jsonObject);
 

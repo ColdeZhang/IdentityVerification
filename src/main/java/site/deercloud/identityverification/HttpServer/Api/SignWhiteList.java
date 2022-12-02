@@ -16,7 +16,6 @@ import java.util.Objects;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
-import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
 public class SignWhiteList implements HttpHandler {
@@ -29,7 +28,6 @@ public class SignWhiteList implements HttpHandler {
                 return;
             }
             JSONObject jsonObject = getBody(exchange);
-            Connection connection = getConnection();
 
             String id = jsonObject.getString("id");                     // 身份证（实名认证用）
             String name = jsonObject.getString("name");                 // 真实姓名（实名认证用）
@@ -41,25 +39,25 @@ public class SignWhiteList implements HttpHandler {
                 uuid = getUUIDFromRemote(profile_name);
             } else {
                 // 离线玩家 - 从本地数据库获取uuid
-                Profile profile = ProfileDAO.selectByName(connection, profile_name);
+                Profile profile = ProfileDAO.selectByName(profile_name);
                 if (profile == null) {
                     jsonResponse(exchange, 400, "玩家不存在", null);
                     return;
                 }
-                uuid = UserDAO.selectByUuid(connection, profile.belongTo).uuid;
+                uuid = UserDAO.selectByUuid(profile.belongTo).uuid;
             }
             if (uuid == null) {
                 jsonResponse(exchange, 400, "UUID校验不通过，请检查后输入。", null);
                 return;
             }
-            if (WhiteListDAO.isIdInWhiteList(connection, id.hashCode())) {
+            if (WhiteListDAO.isIdInWhiteList(id.hashCode())) {
                 jsonResponse(exchange, 400, "请勿重复添加白名单，本服一人一号。", null);
                 return;
             }
             // TODO: 调实名认证接口 不通过直接返回错误
             //
             //
-            WhiteListDAO.insert(connection, uuid, is_genuine, id.hashCode());
+            WhiteListDAO.insert(uuid, is_genuine, id.hashCode());
             jsonResponse(exchange, 200, "添加白名单成功！", null);
         } catch (Exception e) {
             exchange.close();

@@ -29,28 +29,27 @@ public class Refresh implements HttpHandler {
                 Response.err_method_not_allowed(exchange);
                 return;
             }
-            Connection connection = SqlManager.getConnection();
             JSONObject body = getBody(exchange);
             String accessToken = body.getString("accessToken");
             String clientToken = body.getString("clientToken");
             Boolean requestUser = body.getBoolean("requestUser");
 
-            if (TokenDAO.isAccessTokenExpired(connection, accessToken)) {
+            if (TokenDAO.isAccessTokenExpired(accessToken)) {
                 Response.err_invalid_token(exchange, "无效的令牌", "无效的令牌");
                 return;
             }
-            if (clientToken != null && TokenDAO.isClientTokenExpired(connection, clientToken)) {
+            if (clientToken != null && TokenDAO.isClientTokenExpired(clientToken)) {
                 Response.err_invalid_token(exchange, "无效的令牌", "无效的令牌");
                 return;
             }
-            Token new_token = TokenDAO.selectByAccessToken(connection, accessToken);
+            Token new_token = TokenDAO.selectByAccessToken(accessToken);
             if (new_token == null) {
                 Response.err_invalid_token(exchange, "无效的令牌", "无效的令牌");
                 return;
             }
 
             // 删除原先的令牌 并生成新的令牌
-            TokenDAO.deleteByAccessToken(connection, accessToken);
+            TokenDAO.deleteByAccessToken(accessToken);
             new_token.accessToken = UUID.randomUUID().toString();
             new_token.expiresAt = System.currentTimeMillis() + 432000000;
             // 选择角色的操作 要求原令牌所绑定的角色为空
@@ -64,12 +63,12 @@ public class Refresh implements HttpHandler {
                 new_token.profileUUID = body.getJSONObject("selectedProfile").getString("id");
             }
             // 新令牌存库
-            TokenDAO.insert(connection, new_token);
+            TokenDAO.insert( new_token);
             JSONObject response = new JSONObject();
             response.put("accessToken", new_token.accessToken);
             response.put("clientToken", new_token.clientToken);
             if (requestUser) {
-                User user = UserDAO.selectByUuid(connection, new_token.userUUID);
+                User user = UserDAO.selectByUuid(new_token.userUUID);
                 response.put("user", user.serialToJSONObject());
             }
             if (!body.getJSONObject("selectedProfile").isEmpty()) {

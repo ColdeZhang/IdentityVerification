@@ -30,8 +30,7 @@ public class GetProfile implements HttpHandler {
             if (request.containsKey("unsigned")) {
                 unsigned = Boolean.parseBoolean(request.get("unsigned"));
             }
-            Connection connection = SqlManager.getConnection();
-            Profile profile = ProfileDAO.selectByUuid(connection, uuid);
+            Profile profile = ProfileDAO.selectByUuid(uuid);
             if (profile == null) {
                 Response.success_no_content(exchange);
                 return;

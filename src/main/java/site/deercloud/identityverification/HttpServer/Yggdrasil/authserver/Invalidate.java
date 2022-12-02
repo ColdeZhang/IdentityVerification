@@ -27,9 +27,8 @@ public class Invalidate implements HttpHandler {
             String accessToken = request.getString("accessToken");
             String clientToken = request.getString("clientToken");
 
-            Connection connection = SqlManager.getConnection();
 
-            TokenDAO.deleteByAccessToken(connection, accessToken);
+            TokenDAO.deleteByAccessToken(accessToken);
 
             Response.success_no_content(exchange);
         } catch (IOException | SQLException e) {

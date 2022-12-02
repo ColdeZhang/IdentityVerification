@@ -35,8 +35,7 @@ public class Login implements HttpHandler {
                 return;
             }
 
-            Connection connection = SqlManager.getConnection();
-            User user = UserDAO.selectByEmail(connection, username);
+            User user = UserDAO.selectByEmail(username);
             if (user == null) {
                 jsonResponse(exchange, 500, "用户不存在", null);
                 return;

@@ -26,10 +26,9 @@ public class InviteCodeManager {
         String code = RandomCode.NewCodeWithAlphabet(8);
         if (sender instanceof Player) {
             if (sender.isOp()) {
-                Connection connection = SqlManager.getConnection();
                 try {
-                    User console = UserDAO.selectByUuid(connection, ((Player) sender).getUniqueId().toString());
-                    InviteCodeDAO.insert(connection, code, console.uuid, false, 0);
+                    User console = UserDAO.selectByUuid(((Player) sender).getUniqueId().toString());
+                    InviteCodeDAO.insert(code, console.uuid, false, 0);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
@@ -38,11 +37,10 @@ public class InviteCodeManager {
                 MyLogger.warn(sender,"你没有的达到申请邀请码的要求！");
             }
         } else {
-            Connection connection = SqlManager.getConnection();
             try {
-                User console = UserDAO.selectByEmail(connection, "console@mc.com");
+                User console = UserDAO.selectByEmail("console@mc.com");
 
-                InviteCodeDAO.insert(connection, code, console.uuid, false, 0);
+                InviteCodeDAO.insert(code, console.uuid, false, 0);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -57,13 +55,12 @@ public class InviteCodeManager {
     public static void ListCodesOf(CommandSender sender) {
         try {
             String uuid;
-            Connection connection = SqlManager.getConnection();
             if (sender instanceof Player) {
                 uuid = ((Player) sender).getUniqueId().toString();
             } else {
-                    uuid = Objects.requireNonNull(UserDAO.selectByEmail(connection, "console@mc.com")).uuid;
+                    uuid = Objects.requireNonNull(UserDAO.selectByEmail("console@mc.com")).uuid;
             }
-            Set<InviteCode> codes = InviteCodeDAO.selectByInviter(connection, uuid);
+            Set<InviteCode> codes = InviteCodeDAO.selectByInviter(uuid);
 
             sender.sendMessage("|     邀请码     |      创建时间     ｜");
             for (InviteCode code : codes) {

@@ -25,11 +25,10 @@ public class Validate implements HttpHandler {
                 Response.err_method_not_allowed(exchange);
                 return;
             }
-            Connection connection = SqlManager.getConnection();
             JSONObject request = getBody(exchange);
             String accessToken = request.getString("accessToken");
             String clientToken = request.getString("clientToken");
-            Token token = TokenDAO.selectByAccessToken(connection, accessToken);
+            Token token = TokenDAO.selectByAccessToken(accessToken);
             // 检查令牌是否存在
             if (token == null){
                 Response.err_invalid_token(exchange, "无效的令牌", "无效的令牌");
@@ -41,8 +40,8 @@ public class Validate implements HttpHandler {
                 return;
             }
             // 检查令牌是否过期
-            if (TokenDAO.isAccessTokenExpired(connection, accessToken)) {
-                TokenDAO.deleteByAccessToken(connection, accessToken);  // 如果过期则删除令牌
+            if (TokenDAO.isAccessTokenExpired(accessToken)) {
+                TokenDAO.deleteByAccessToken(accessToken);  // 如果过期则删除令牌
                 Response.err_invalid_token(exchange, "令牌过期", "令牌过期，请重新登录");
                 return;
             }
