@@ -47,8 +47,7 @@ public class StreamUtil {
         return readText(in, encoding, -1);
     }
 
-    public static String readText(InputStream in, String encoding, int bufferSize)
-            throws IOException {
+    public static String readText(InputStream in, String encoding, int bufferSize) throws IOException {
         Reader reader = (encoding == null) ? new InputStreamReader(in) : new InputStreamReader(in,
                 encoding);
 

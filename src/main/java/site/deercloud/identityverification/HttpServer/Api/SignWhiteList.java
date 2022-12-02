@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Objects;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
 import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.Utils.Utils.*;
@@ -27,7 +28,7 @@ public class SignWhiteList implements HttpHandler {
                 jsonResponse(exchange, 405, "Method Not Allowed", null);
                 return;
             }
-            JSONObject jsonObject = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject jsonObject = getBody(exchange);
             Connection connection = getConnection();
 
             String id = jsonObject.getString("id");                     // 身份证（实名认证用）

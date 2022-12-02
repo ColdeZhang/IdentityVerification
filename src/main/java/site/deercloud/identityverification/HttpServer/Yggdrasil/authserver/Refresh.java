@@ -17,6 +17,8 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
+
 public class Refresh implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
@@ -28,7 +30,7 @@ public class Refresh implements HttpHandler {
                 return;
             }
             Connection connection = SqlManager.getConnection();
-            JSONObject body = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject body = getBody(exchange);
             String accessToken = body.getString("accessToken");
             String clientToken = body.getString("clientToken");
             Boolean requestUser = body.getBoolean("requestUser");

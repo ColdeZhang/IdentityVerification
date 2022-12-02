@@ -8,6 +8,7 @@ import site.deercloud.identityverification.Utils.MyLogger;
 import java.io.IOException;
 import java.util.Map;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
@@ -21,7 +22,7 @@ public class Ban implements HttpHandler {
                 return;
             }
 
-            JSONObject jsonObject = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject jsonObject = getBody(exchange);
             String uuid = jsonObject.getString("uuid");
             String reason = jsonObject.getString("reason");
             Integer time = jsonObject.getInteger("time");

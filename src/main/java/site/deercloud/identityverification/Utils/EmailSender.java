@@ -38,13 +38,15 @@ public class EmailSender {
         try {
             // 1. 创建参数配置, 用于连接邮件服务器的参数配置
             Properties props = new Properties(); // 参数配置
+            props.setProperty("mail.debug", "false");
+
             props.setProperty("mail.transport.protocol", "smtp"); // 使用的协议（JavaMail规范要求）
             props.setProperty("mail.smtp.host", host); // 发件人的邮箱的 SMTP 服务器地址
             props.setProperty("mail.smtp.auth", "true"); // 需要请求认证
             props.setProperty("mail.smtp.port", port);
+            props.setProperty("mail.smtp.ssl.enable", "true");
             props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             props.setProperty("mail.smtp.socketFactory.fallback", "false");
-            props.setProperty("mail.smtp.socketFactory.port", port);
 
             // 2. 根据配置创建会话对象, 用于和邮件服务器交互
             Session session = Session.getInstance(props);
@@ -52,7 +54,7 @@ public class EmailSender {
 
             // 3. 创建一封邮件
             MimeMessage message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(from, "IdentityVerification", "UTF-8")); // 发件人
+            message.setFrom(new InternetAddress(from, account, "UTF-8")); // 发件人
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(to, "no-reply", "UTF-8")); // 收件人
             message.setSubject(subject, "UTF-8"); // 邮件主题
             message.setContent(content, "text/html;charset=UTF-8"); // 邮件正文（可以使用html标签）

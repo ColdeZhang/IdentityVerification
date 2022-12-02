@@ -28,7 +28,7 @@ public class InviteCodeManager {
             if (sender.isOp()) {
                 Connection connection = SqlManager.getConnection();
                 try {
-                    User console = UserDAO.selectByEmail(connection, "console@mc.com");
+                    User console = UserDAO.selectByUuid(connection, ((Player) sender).getUniqueId().toString());
                     InviteCodeDAO.insert(connection, code, console.uuid, false, 0);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);

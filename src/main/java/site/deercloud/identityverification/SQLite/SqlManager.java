@@ -7,17 +7,34 @@ import java.sql.*;
 
 public class SqlManager {
 
+    public SqlManager() throws SQLException {
+        SQLiteConfig config = new SQLiteConfig();
+        config.setSharedCache(true);
+        config.enableRecursiveTriggers(true);
+        config.setBusyTimeout(10000);
+        SQLiteDataSource ds = new SQLiteDataSource(config);
+        String url = System.getProperty("user.dir"); // 获取工作目录
+        ds.setUrl("jdbc:sqlite:"+url+"/plugins/IdentityVerification/"+"IV-Database.db");
+        session = ds.getConnection();
+    }
+
+    public static Connection session;
+
     public static Connection getConnection(){
-        try {
-            SQLiteConfig config = new SQLiteConfig();
-            config.setSharedCache(true);
-            config.enableRecursiveTriggers(true);
-            SQLiteDataSource ds = new SQLiteDataSource(config);
-            String url = System.getProperty("user.dir"); // 获取工作目录
-            ds.setUrl("jdbc:sqlite:"+url+"/plugins/IdentityVerification/"+"IV-Database.db");
-            return ds.getConnection();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        // 加锁 防止多线程同时访问
+        synchronized (SqlManager.class) {
+            try {
+                SQLiteConfig config = new SQLiteConfig();
+                config.setSharedCache(true);
+                config.enableRecursiveTriggers(true);
+                config.setBusyTimeout(10000);
+                SQLiteDataSource ds = new SQLiteDataSource(config);
+                String url = System.getProperty("user.dir"); // 获取工作目录
+                ds.setUrl("jdbc:sqlite:"+url+"/plugins/IdentityVerification/"+"IV-Database.db");
+                return ds.getConnection();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

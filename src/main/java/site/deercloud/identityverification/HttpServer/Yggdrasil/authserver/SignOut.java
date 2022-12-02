@@ -17,6 +17,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
+
 public class SignOut implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
@@ -26,7 +28,7 @@ public class SignOut implements HttpHandler {
                 Response.err_method_not_allowed(exchange);
                 return;
             }
-            JSONObject request = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject request = getBody(exchange);
             String username = request.getString("username");
             String password = request.getString("password");
             Connection connection = SqlManager.getConnection();

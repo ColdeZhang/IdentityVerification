@@ -3,6 +3,7 @@ package site.deercloud.identityverification.SQLite;
 import site.deercloud.identityverification.HttpServer.model.InviteCode;
 
 import java.sql.*;
+import java.util.HashSet;
 import java.util.Set;
 
 public class InviteCodeDAO {
@@ -77,7 +78,7 @@ public class InviteCodeDAO {
         PreparedStatement prep = con.prepareStatement(sql);
         prep.setString(1, inviterUUID);
         ResultSet rs = prep.executeQuery();
-        Set<InviteCode> inviteCodes = null;
+        Set<InviteCode> inviteCodes = new HashSet<>();
         while (rs.next()) {
             InviteCode inviteCode = new InviteCode();
             inviteCode.code = rs.getString("code");

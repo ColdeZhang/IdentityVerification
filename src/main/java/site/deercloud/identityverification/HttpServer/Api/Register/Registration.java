@@ -3,19 +3,24 @@ package site.deercloud.identityverification.HttpServer.Api.Register;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import org.apache.commons.lang.StringEscapeUtils;
 import site.deercloud.identityverification.Controller.EmailCodeCache;
 import site.deercloud.identityverification.HttpServer.model.Profile;
 import site.deercloud.identityverification.HttpServer.model.Texture;
 import site.deercloud.identityverification.HttpServer.model.User;
+import site.deercloud.identityverification.IdentityVerification;
 import site.deercloud.identityverification.SQLite.InviteCodeDAO;
 import site.deercloud.identityverification.SQLite.InviteRelationDAO;
 import site.deercloud.identityverification.SQLite.ProfileDAO;
 import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.util.UUID;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
 import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.Utils.Utils.*;
@@ -31,7 +36,7 @@ public class Registration implements HttpHandler {
                 return;
             }
 
-            JSONObject jsonObject = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject jsonObject = getBody(exchange);
 
             String email        = jsonObject.getString("email");
             String password     = jsonObject.getString("password");
@@ -41,18 +46,21 @@ public class Registration implements HttpHandler {
 
             String profile_name = jsonObject.getString("profile_name");
 
+            // 验证邮箱验证码
             if (EmailCodeCache.isEmailCodeExpired(email)) {
-                jsonResponse(exchange, 500, "验证码无效，请重新获取。", null);
+                jsonResponse(exchange, 500, "邮箱验证码无效，请重新获取。", null);
                 return;
             }
             if (!EmailCodeCache.isEmailCodeValid(email, active_code)) {
                 jsonResponse(exchange, 500, "验证码错误！", null);
                 return;
             }
+            // 验证昵称可用性
             if (getUUIDFromRemote(profile_name) != null){
                 jsonResponse(exchange, 400, "此昵称已有正版玩家使用，为避免ID碰撞请改名。", null);
                 return;
             }
+            // 验证邀请码可用性
             Connection connection = getConnection();
             if (!InviteCodeDAO.isValid(connection, inviteCode)) {
                 jsonResponse(exchange, 400, "邀请码不存在或已被使用！", null);
@@ -62,15 +70,20 @@ public class Registration implements HttpHandler {
             String inviteCodeOwner = InviteCodeDAO.getInviterUUID(connection, inviteCode);
             // 创建邀请关系
             InviteRelationDAO.insert(connection, new_uuid, inviteCodeOwner, System.currentTimeMillis());
+            MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + new_uuid);
             // 标记邀请码已使用
             InviteCodeDAO.setUsed(connection, inviteCode, true, System.currentTimeMillis());
+            MyLogger.debug("邀请码已标记为已使用：" + inviteCode);
 
+            // 创建用户
             User user = new User();
             user.uuid = new_uuid;
             user.email = email;
             user.password = password;
             UserDAO.insert(connection, user);
+            MyLogger.debug("用户注册成功：" + user.uuid);
 
+            // 创建一个默认角色
             Profile profile = new Profile();
             profile.name = profile_name;
             profile.uuid = UUID.randomUUID().toString();
@@ -79,6 +92,7 @@ public class Registration implements HttpHandler {
             profile.textures = texture.serialWithBase64();
             profile.textures_signature = texture.sign();
             ProfileDAO.insert(connection, profile);
+            MyLogger.debug("角色创建成功：" + profile.uuid);
 
             jsonResponse(exchange, 200, "注册成功！", null);
         } catch (Exception e) {

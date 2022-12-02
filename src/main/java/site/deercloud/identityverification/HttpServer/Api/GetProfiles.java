@@ -14,6 +14,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBodyArray;
+
 public class GetProfiles implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
@@ -23,7 +26,7 @@ public class GetProfiles implements HttpHandler {
                 Response.err_method_not_allowed(exchange);
                 return;
             }
-            JSONArray profiles_json = JSONArray.parseArray(exchange.getRequestBody().toString());
+            JSONArray profiles_json = getBodyArray(exchange);
             if (profiles_json.size() > 5) {
                 Response.success_no_content(exchange);
                 return;

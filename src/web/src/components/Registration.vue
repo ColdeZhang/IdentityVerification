@@ -7,21 +7,21 @@
                 </n-form-item>
             </n-grid-item>
             
+            <n-grid-item span="24">
+                <n-form-item label="设置密码">
+                    <n-input type="password" show-password-on="click" placeholder="" v-model:value="password" />
+                </n-form-item>
+            </n-grid-item>
+
             <n-grid-item span="12">
-                <n-form-item label="验证码">
-                    <n-input placeholder="" v-model:value="email_code" />
+                <n-form-item label="创建一个游戏昵称">
+                    <n-input placeholder="" v-model:value="invite_code" />
                 </n-form-item>
             </n-grid-item>
 
             <n-grid-item span="12">
                 <n-form-item label="&nbsp;">
-                    <n-button @click="send_email_code" style="width: 100%">{{send_code_text}}</n-button>
-                </n-form-item>
-            </n-grid-item>
-
-            <n-grid-item span="24">
-                <n-form-item label="密码">
-                    <n-input type="password" show-password-on="click" placeholder="" v-model:value="password" />
+                    <n-button @click="send_email_code" style="width: 100%">{{profile_name_text}}</n-button>
                 </n-form-item>
             </n-grid-item>
 
@@ -34,6 +34,18 @@
             <n-grid-item span="12">
                 <n-form-item label="&nbsp;">
                     <n-button @click="send_email_code" style="width: 100%">{{verify_invite_code_text}}</n-button>
+                </n-form-item>
+            </n-grid-item>
+
+            <n-grid-item span="12">
+                <n-form-item label="邮箱验证码">
+                    <n-input placeholder="" v-model:value="email_code" />
+                </n-form-item>
+            </n-grid-item>
+
+            <n-grid-item span="12">
+                <n-form-item label="&nbsp;">
+                    <n-button @click="send_email_code" style="width: 100%">{{send_code_text}}</n-button>
                 </n-form-item>
             </n-grid-item>
         
@@ -57,6 +69,7 @@ const invite_code = ref('')
 
 const send_code_text = ref('发送验证码')
 const verify_invite_code_text = ref('验证邀请码')
+const profile_name_text = ref('验证可用性')
 
 
 const onSubmit = () => {

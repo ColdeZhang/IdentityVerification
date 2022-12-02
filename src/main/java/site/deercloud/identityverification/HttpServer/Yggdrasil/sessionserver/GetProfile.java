@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static site.deercloud.identityverification.Utils.Utils.ParseQueryString;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
 
 public class GetProfile implements HttpHandler {
     @Override
@@ -25,7 +25,7 @@ public class GetProfile implements HttpHandler {
                 return;
             }
             String uuid = exchange.getRequestURI().getPath().split("/")[4];
-            Map<String, String> request = ParseQueryString(exchange.getRequestURI().getQuery());
+            Map<String, String> request = getQuery(exchange);
             boolean unsigned = true;
             if (request.containsKey("unsigned")) {
                 unsigned = Boolean.parseBoolean(request.get("unsigned"));

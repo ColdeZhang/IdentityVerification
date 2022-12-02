@@ -8,6 +8,7 @@ import site.deercloud.identityverification.Utils.MyLogger;
 import java.io.IOException;
 import java.util.Map;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
@@ -21,8 +22,7 @@ public class GetOnlineProfile implements HttpHandler {
                 return;
             }
 
-            String query = exchange.getRequestURI().getQuery();
-            Map<String, String> params = ParseQueryString(query);
+            Map<String, String> params = getQuery(exchange);
 
             String name = params.get("name");
             String UUID = getUUIDFromRemote(name);

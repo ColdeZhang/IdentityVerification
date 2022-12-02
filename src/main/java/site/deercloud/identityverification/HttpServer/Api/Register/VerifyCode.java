@@ -15,9 +15,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
-import static site.deercloud.identityverification.Utils.Utils.ParseQueryString;
-
 public class VerifyCode implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
@@ -27,8 +26,7 @@ public class VerifyCode implements HttpHandler {
                 jsonResponse(exchange, 405, "Method Not Allowed", null);
                 return;
             }
-            String query = exchange.getRequestURI().getQuery();
-            Map<String, String> params = ParseQueryString(query);
+            Map<String, String> params = getQuery(exchange);
             String code = params.get("code");
             Connection conn = SqlManager.getConnection();
 

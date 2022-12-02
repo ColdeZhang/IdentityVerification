@@ -15,8 +15,8 @@ public class ProfileDAO {
                 + "	name text NOT NULL,\n"                              // 玩家名字
                 + "	textures text NOT NULL,\n"                          // 材质
                 + "	textures_signature text NOT NULL,\n"                // 材质签名
-                + " uploadableTextures text NOT NULL,\n"                // 可上传的材质
-                + " uploadableTextures_signature text NOT NULL,\n"      // 可上传的材质签名
+                + " uploadableTextures text ,\n"                // 可上传的材质
+                + " uploadableTextures_signature text ,\n"      // 可上传的材质签名
                 + "	update_time integer NOT NULL\n"                     // 数据更新时间
                 + ");";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);

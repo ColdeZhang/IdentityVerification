@@ -13,24 +13,24 @@ import java.util.*;
 
 public class Utils {
 
-    public static Map<String,String> ParseQueryString(String formData ) {
-        Map<String,String> result = new HashMap<>();
-        if(formData== null || formData.trim().length() == 0) {
-            return result;
-        }
-        final String[] items = formData.split("&");
-        Arrays.stream(items).forEach(item ->{
-            final String[] keyAndVal = item.split("=");
-            if( keyAndVal.length == 2) {
-                try{
-                    final String key = URLDecoder.decode( keyAndVal[0],"utf8");
-                    final String val = URLDecoder.decode( keyAndVal[1],"utf8");
-                    result.put(key,val);
-                }catch (UnsupportedEncodingException ignored) {}
-            }
-        });
-        return result;
-    }
+//    public static Map<String,String> ParseQueryString(String formData ) {
+//        Map<String,String> result = new HashMap<>();
+//        if(formData== null || formData.trim().length() == 0) {
+//            return result;
+//        }
+//        final String[] items = formData.split("&");
+//        Arrays.stream(items).forEach(item ->{
+//            final String[] keyAndVal = item.split("=");
+//            if( keyAndVal.length == 2) {
+//                try{
+//                    final String key = URLDecoder.decode( keyAndVal[0],"utf8");
+//                    final String val = URLDecoder.decode( keyAndVal[1],"utf8");
+//                    result.put(key,val);
+//                }catch (UnsupportedEncodingException ignored) {}
+//            }
+//        });
+//        return result;
+//    }
 
     /**
      * 根据玩家名字从Mojiang服务器获取UUID，如果不存在则返回null

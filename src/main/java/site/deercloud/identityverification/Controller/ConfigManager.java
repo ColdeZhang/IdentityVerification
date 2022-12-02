@@ -149,8 +149,6 @@ public class ConfigManager {
     }
     public void setSignaturePublicKey(String signaturePublicKey) {
         m_SignaturePublicKey = signaturePublicKey;
-        config.set("Yggdrasil.SignaturePublicKey", signaturePublicKey);
-        plugin.saveConfig();
     }
     public void setPublicKeyFileName(String signaturePublicKey) {
         m_RsaPublicKeyFileName = signaturePublicKey;
@@ -166,8 +164,6 @@ public class ConfigManager {
     }
     public void setSignaturePrivateKey(String signaturePrivateKey) {
         m_SignaturePrivateKey = signaturePrivateKey;
-        config.set("Yggdrasil.SignaturePrivateKey", signaturePrivateKey);
-        plugin.saveConfig();
     }
     public void setPrivateKeyFileName(String signaturePrivateKey) {
         m_RsaPrivateKeyFileName = signaturePrivateKey;

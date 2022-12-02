@@ -1,6 +1,7 @@
 package site.deercloud.identityverification.Controller;
 
 import site.deercloud.identityverification.HttpServer.model.EmailCode;
+import site.deercloud.identityverification.IdentityVerification;
 
 import java.util.Map;
 import java.util.Optional;
@@ -22,10 +23,12 @@ public class EmailCodeCache {
     }
 
     public static boolean isEmailCodeExpired(String email) {
+        if (IdentityVerification.getInstance().getConfigManager().getDebug()) return false;
         return getEmailCode(email).map(EmailCode::isExpired).orElse(true);
     }
 
     public static boolean isEmailCodeValid(String email, String code) {
+        if (IdentityVerification.getInstance().getConfigManager().getDebug()) return true;
         return getEmailCode(email).map(emailCode -> emailCode.code.equals(code)).orElse(false);
     }
 }

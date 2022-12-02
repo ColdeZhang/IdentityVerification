@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.HttpServer.model.Response.*;
 
@@ -32,7 +33,7 @@ public class Authenticate implements HttpHandler {
                 Response.err_method_not_allowed(exchange);
                 return;
             }
-            JSONObject body         = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject body         = getBody(exchange);
             String username         = body.getString("username");       // 邮箱（或其他凭证）
             String password         = body.getString("password");       // 密码
             String clientToken      = body.getString("clientToken");    // 由客户端指定的令牌的 clientToken（可选）

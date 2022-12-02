@@ -15,7 +15,7 @@ import java.sql.Connection;
 import java.util.Map;
 import java.util.Objects;
 
-import static site.deercloud.identityverification.Utils.Utils.ParseQueryString;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
 
 public class HasJoined implements HttpHandler {
 
@@ -27,7 +27,7 @@ public class HasJoined implements HttpHandler {
                 Response.err_method_not_allowed(exchange);
                 return;
             }
-            Map<String, String> query = ParseQueryString(exchange.getRequestURI().getQuery());
+            Map<String, String> query = getQuery(exchange);
             String username = query.get("username");
             String serverId = query.get("serverId");
             String ip = query.get("ip");

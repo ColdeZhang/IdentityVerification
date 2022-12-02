@@ -10,9 +10,10 @@ import site.deercloud.identityverification.Utils.RandomCode;
 
 import java.io.IOException;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
 
-public class SendEmailCode implements HttpHandler {
+public class GetEmailCode implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
@@ -21,7 +22,7 @@ public class SendEmailCode implements HttpHandler {
                 jsonResponse(exchange, 405, "Method Not Allowed", null);
                 return;
             }
-            JSONObject request = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject request = getBody(exchange);
             String email = request.getString("email");
 
             if (!EmailCodeCache.isEmailCodeExpired(email)) {
@@ -30,7 +31,10 @@ public class SendEmailCode implements HttpHandler {
             }
 
             String code = RandomCode.NewCodeOnlyNumber(6);
-            EmailSender.sendCodeEmail(email, code);
+            if(!EmailSender.sendCodeEmail(email, code)) {
+                jsonResponse(exchange, 500, "邮件发送失败！", null);
+                return;
+            }
             EmailCodeCache.addEmailCode(email, code);
 
             jsonResponse(exchange, 200, "发送成功，请在五分钟内完成注册。", null);

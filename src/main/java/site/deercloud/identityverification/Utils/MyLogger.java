@@ -28,6 +28,7 @@ public class MyLogger {
     public static void debug(Exception e) {
         if (plugin.getConfigManager().getDebug()) {
             plugin.getLogger().info(ChatColor.AQUA + "| " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

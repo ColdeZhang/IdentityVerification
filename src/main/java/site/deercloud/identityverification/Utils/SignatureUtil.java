@@ -6,7 +6,7 @@ import java.io.StringWriter;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 public class SignatureUtil {
     private final static String SIGN_TYPE_RSA = "RSA";
@@ -24,10 +24,10 @@ public class SignatureUtil {
         if (algorithm == null || "".equals(algorithm) || priKey == null || "".equals(priKey))
             return null;
 
-        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+        KeyFactory keyFactory = KeyFactory.getInstance(algorithm);  // 获取密钥工厂
 
         byte[] encodedKey = StreamUtil.readText(new ByteArrayInputStream(priKey.getBytes())).getBytes();
-        encodedKey = Base64.getDecoder().decode(priKey.getBytes());
+        encodedKey = Base64.decodeBase64(priKey.getBytes());
 
         return keyFactory.generatePrivate(new PKCS8EncodedKeySpec(encodedKey));
     }
@@ -49,7 +49,7 @@ public class SignatureUtil {
         StreamUtil.io(new InputStreamReader(new ByteArrayInputStream(pubKey.getBytes())), writer);
 
         byte[] encodeByte = writer.toString().getBytes();
-        encodeByte = Base64.getDecoder().decode(pubKey.getBytes());
+        encodeByte = Base64.decodeBase64(pubKey.getBytes());
 
         return keyFactory.generatePublic(new X509EncodedKeySpec(encodeByte));
     }
@@ -71,7 +71,7 @@ public class SignatureUtil {
         signature.update(plain.getBytes(CHARSETTING));
         byte[] signed = signature.sign();
 
-        return new String(Base64.getEncoder().encode(signed));
+        return new String(Base64.encodeBase64(signed));
     }
 
     /**
@@ -91,6 +91,6 @@ public class SignatureUtil {
         signature.initVerify(publicKey);
         signature.update(plain.getBytes(CHARSETTING));
 
-        return signature.verify(Base64.getDecoder().decode(sign.getBytes()));
+        return signature.verify(Base64.decodeBase64(sign.getBytes()));
     }
 }

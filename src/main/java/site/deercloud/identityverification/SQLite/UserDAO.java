@@ -22,7 +22,7 @@ public class UserDAO {
     }
 
     public static void insert(Connection con, User user) throws SQLException {
-        String sql = "INSERT INTO user(uuid, email, password, create_time, update_time) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO user(uuid, email, password, create_time, update_time) VALUES(?,?,?,?,?)";
         PreparedStatement prep = con.prepareStatement(sql);
         prep.setString(1, user.uuid);
         prep.setString(2, user.email);
@@ -90,9 +90,10 @@ public class UserDAO {
     }
 
     public static Boolean isEmailExist(Connection con, String email) throws SQLException {
-        String sql = "SELECT * FROM user WHERE email = ?";
+        String sql = "SELECT count(*) FROM user WHERE email = ?";
         PreparedStatement prep = con.prepareStatement(sql);
-        return prep.executeQuery().next();
+        prep.setString(1, email);
+        return prep.executeQuery().getInt(1) > 0;
     }
 
 }

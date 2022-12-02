@@ -1,8 +1,10 @@
 package site.deercloud.identityverification.HttpServer;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import site.deercloud.identityverification.HttpServer.Api.Register.GetEmailCode;
 import site.deercloud.identityverification.HttpServer.Api.Register.GetOnlineProfile;
 import site.deercloud.identityverification.HttpServer.Api.Register.Registration;
 import site.deercloud.identityverification.HttpServer.Api.Register.VerifyCode;
@@ -18,8 +20,15 @@ import site.deercloud.identityverification.IdentityVerification;
 import site.deercloud.identityverification.Controller.ConfigManager;
 import site.deercloud.identityverification.Utils.MyLogger;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +63,8 @@ public class HttpServerManager {
             webServer.createContext("/api/getInviter", new GetInviter());
             // 登记白名单
             webServer.createContext("/api/signWhiteList", new SignWhiteList());
+            // 获取邮箱验证码
+            webServer.createContext("/api/getEmailCode", new GetEmailCode());
 
             // Yggdrasil API 元数据
             yagServer.createContext("/", new MetaData());
@@ -108,6 +119,49 @@ public class HttpServerManager {
         exchange.sendResponseHeaders(200, jsonObject.toString().getBytes().length);
         exchange.getResponseBody().write(jsonObject.toString().getBytes());
         exchange.getResponseBody().close();
+    }
+
+    public static JSONObject getBody(HttpExchange exchange) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"));
+        StringBuilder requestBodyContent = new StringBuilder();
+        String line = null;
+        while ((line = bufferedReader.readLine()) != null) {
+            requestBodyContent.append(line);
+        }
+        MyLogger.debug(requestBodyContent.toString());
+        return JSONObject.parseObject(requestBodyContent.toString());
+    }
+
+    public static JSONArray getBodyArray(HttpExchange exchange) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"));
+        StringBuilder requestBodyContent = new StringBuilder();
+        String line = null;
+        while ((line = bufferedReader.readLine()) != null) {
+            requestBodyContent.append(line);
+        }
+        MyLogger.debug(requestBodyContent.toString());
+        return JSONObject.parseArray(requestBodyContent.toString());
+    }
+
+    public static Map<String,String> getQuery(HttpExchange exchange){
+        String query_string = exchange.getRequestURI().getQuery();
+        Map<String,String> result = new HashMap<>();
+        if(query_string== null || query_string.trim().length() == 0) {
+            return result;
+        }
+        final String[] items = query_string.split("&");
+        Arrays.stream(items).forEach(item ->{
+            final String[] keyAndVal = item.split("=");
+            if( keyAndVal.length == 2) {
+                try{
+                    final String key = URLDecoder.decode( keyAndVal[0],"utf8");
+                    final String val = URLDecoder.decode( keyAndVal[1],"utf8");
+                    MyLogger.debug(key + " : " + val);
+                    result.put(key,val);
+                }catch (UnsupportedEncodingException ignored) {}
+            }
+        });
+        return result;
     }
 
     public static SessionTokenCache getSessionCache() {

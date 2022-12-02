@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
 import static site.deercloud.identityverification.SQLite.SqlManager.getConnection;
 import static site.deercloud.identityverification.Utils.Utils.*;
@@ -28,8 +29,7 @@ public class GetInviter implements HttpHandler {
                 return;
             }
 
-            String query = exchange.getRequestURI().getQuery();
-            Map<String, String> params = ParseQueryString(query);
+            Map<String, String> params = getQuery(exchange);
 
             Connection connection = getConnection();
             String uuid = params.get("uuid");

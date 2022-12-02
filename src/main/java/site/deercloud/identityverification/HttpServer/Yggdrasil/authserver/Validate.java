@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
+
 public class Validate implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -24,7 +26,7 @@ public class Validate implements HttpHandler {
                 return;
             }
             Connection connection = SqlManager.getConnection();
-            JSONObject request = JSONObject.parseObject(exchange.getRequestBody().toString());
+            JSONObject request = getBody(exchange);
             String accessToken = request.getString("accessToken");
             String clientToken = request.getString("clientToken");
             Token token = TokenDAO.selectByAccessToken(connection, accessToken);

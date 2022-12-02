@@ -7,3 +7,9 @@ load: STARTUP
 authors: [ Luming ]
 description: 实名认证添加白名单、正版玩家邀请非正版注册管理。
 website: https://blog.deercloud.site
+commands:
+    identityverification:
+        description: 实名认证插件
+        usage: /iv <help>
+        aliases: [iv]
+        plugin: IdentityVerification

@@ -97,6 +97,7 @@ $RECYCLE.BIN/
 *.lnk
 
 target/
+test-setver/
 
 pom.xml.tag
 pom.xml.releaseBackup

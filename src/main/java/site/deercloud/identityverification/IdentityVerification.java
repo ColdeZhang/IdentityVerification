@@ -9,9 +9,11 @@ import site.deercloud.identityverification.SQLite.SqlManager;
 import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Controller.AFKTracker;
 import site.deercloud.identityverification.Controller.ConfigManager;
+import site.deercloud.identityverification.Utils.FileToString;
 import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Controller.GameSessionCache;
 
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -41,20 +43,31 @@ public final class IdentityVerification extends JavaPlugin {
             }
             connection.close();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            MyLogger.debug(e);
         }
         // 初始化RSA
-        String publicKey = new File(this.getDataFolder(), configManager.getPublicKeyFileName()).toString();
-        String privateKey = new File(this.getDataFolder(), configManager.getPrivateKeyFileName()).toString();
-        if (publicKey == null || privateKey == null) {
+        File publicKeyPath = new File(this.getDataFolder(), configManager.getPublicKeyFileName());
+        File privateKeyPath = new File(this.getDataFolder(), configManager.getPrivateKeyFileName());
+        String pubKeyContent = FileToString.Read(publicKeyPath);
+        String priKeyContent = FileToString.Read(privateKeyPath);
+        if (pubKeyContent == null || priKeyContent == null) {
             MyLogger.error("RSA文件不存在, 插件退出。");
             this.getServer().getPluginManager().disablePlugin(this);
         }else {
-            privateKey = privateKey.replace("-----BEGIN OPENSSH PRIVATE KEY-----", "");
-            privateKey = privateKey.replace("-----END OPENSSH PRIVATE KEY-----", "");
-            configManager.setSignaturePublicKey(publicKey);
-            configManager.setSignaturePrivateKey(privateKey);
+            pubKeyContent = pubKeyContent.replace("-----BEGIN PUBLIC KEY-----", "")
+                    .replace("-----END PUBLIC KEY-----", "")
+                    .replace("\n", "");
+            priKeyContent = priKeyContent.replace("-----BEGIN PRIVATE KEY-----", "")
+                    .replace("-----END PRIVATE KEY-----", "")
+                    .replace("\n", "");
+            MyLogger.debug("publicKey: " + pubKeyContent);
+            MyLogger.debug("privateKey: " + priKeyContent);
+            configManager.setSignaturePublicKey(pubKeyContent);
+            configManager.setSignaturePrivateKey(priKeyContent);
         }
+        // 注册事件 指令
+        this.getServer().getPluginManager().registerEvents(new Events(), this);
+        this.getCommand("identityverification").setExecutor(new Commands());
 
     }
 
