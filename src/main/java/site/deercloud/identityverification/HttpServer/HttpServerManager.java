@@ -5,9 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import site.deercloud.identityverification.HttpServer.Api.Register.GetEmailCode;
-import site.deercloud.identityverification.HttpServer.Api.Register.GetOnlineProfile;
+import site.deercloud.identityverification.HttpServer.Api.GetOnlineProfile;
 import site.deercloud.identityverification.HttpServer.Api.Register.Registration;
 import site.deercloud.identityverification.HttpServer.Api.Register.VerifyCode;
+import site.deercloud.identityverification.HttpServer.Api.Register.VerifyName;
 import site.deercloud.identityverification.HttpServer.Web.*;
 import site.deercloud.identityverification.HttpServer.Api.*;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.MetaData;
@@ -55,6 +56,8 @@ public class HttpServerManager {
             webServer.createContext("/api/getOnlineProfile", new GetOnlineProfile());
             // 验证邀请码 返回邀请者信息用于确认
             webServer.createContext("/api/verifyCode", new VerifyCode());
+            // 验证昵称是否可用
+            webServer.createContext("/api/verifyName", new VerifyName());
             // 封禁玩家
             webServer.createContext("/api/ban", new Ban());
             // 离线用户注册

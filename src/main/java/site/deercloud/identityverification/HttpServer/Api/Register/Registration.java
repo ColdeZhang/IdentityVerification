@@ -34,6 +34,15 @@ public class Registration implements HttpHandler {
 
             String profile_name = jsonObject.getString("profile_name");
 
+            // 验证名称唯一性
+            if (ProfileDAO.selectByName(profile_name) != null) {
+                jsonResponse(exchange, 500, "昵称已存在于本服务器。", null);
+                return;
+            }
+            if (getUUIDFromRemote(profile_name) != null) {
+                jsonResponse(exchange, 400, "昵称已被一个正版玩家使用，建议不要使用此昵称。", null);
+                return;
+            }
             // 验证邮箱唯一性
             if (UserDAO.selectByEmail(email) != null) {
                 jsonResponse(exchange, 400, "此邮箱已被注册。", null);

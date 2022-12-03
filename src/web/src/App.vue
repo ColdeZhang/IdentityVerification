@@ -4,16 +4,20 @@
     <RouterLink to="/reg">注册</RouterLink>
   </header>
   <main>
-    <RouterView />
+
+    <n-dialog-provider>
+      <n-notification-provider>
+        <RouterView />
+      </n-notification-provider>
+    </n-dialog-provider>
+
   </main>
 </template>
 
 
 <script setup lang="ts">
-import { h } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import { NMenu, NGrid, NGridItem, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter } from 'naive-ui';
-import type { MenuOption } from 'naive-ui'
+import { NDialogProvider, NNotificationProvider } from 'naive-ui';
 import axios from "axios";
 
 axios.defaults.baseURL = 'http://127.0.0.1:11520/';
@@ -38,5 +42,4 @@ main {
   padding: 1em;
   position: flex;
 }
-
 </style>

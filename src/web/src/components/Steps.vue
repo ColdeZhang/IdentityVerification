@@ -1,5 +1,5 @@
 <template>
-    <n-steps :current="(current as number)" :status="currentStatus">
+    <n-steps :current="(current as number)">
       <n-step
         title="注册账号"
         description="如果你有正版账号可以跳过这一步"
