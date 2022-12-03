@@ -56,8 +56,7 @@ public class Response {
     }
 
     public static void success_no_content(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(204, "No Content".getBytes().length);
-        exchange.getResponseBody().write("No Content".getBytes());
+        exchange.sendResponseHeaders(204, -1);
         exchange.getResponseBody().close();
     }
 

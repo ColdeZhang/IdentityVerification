@@ -12,11 +12,9 @@ import site.deercloud.identityverification.Controller.ConfigManager;
 import site.deercloud.identityverification.Utils.FileToString;
 import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Controller.GameSessionCache;
+import site.deercloud.identityverification.Utils.UnsignedUUID;
 
-import java.io.FileReader;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.UUID;
 
 public final class IdentityVerification extends JavaPlugin {
 
@@ -36,8 +34,8 @@ public final class IdentityVerification extends JavaPlugin {
                 // 生成控制台用户
                 User consoleUser = new User();
                 consoleUser.email = "console@mc.com";
-                consoleUser.uuid = UUID.randomUUID().toString();
-                consoleUser.password = String.valueOf("123456".hashCode());
+                consoleUser.uuid = UnsignedUUID.GenerateUUID();
+                consoleUser.password = "123456";
                 UserDAO.insert(consoleUser);
             }
         } catch (SQLException e) {

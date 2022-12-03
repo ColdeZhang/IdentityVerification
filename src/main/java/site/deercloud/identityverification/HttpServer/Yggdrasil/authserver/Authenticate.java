@@ -12,12 +12,9 @@ import site.deercloud.identityverification.SQLite.ProfileDAO;
 import site.deercloud.identityverification.SQLite.TokenDAO;
 import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
+import site.deercloud.identityverification.Utils.UnsignedUUID;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.model.Response.*;
@@ -45,12 +42,13 @@ public class Authenticate implements HttpHandler {
             if (!UserDAO.checkPassword(username, password)) {
                 err_password_wrong(exchange, "密码错误，或短时间内多次登录失败而被暂时禁止登录");
             }
+            MyLogger.debug("密码验证通过" + username);
             User user = UserDAO.selectByEmail(username);
-
+            MyLogger.debug(user.serialToJSONObject().toString());
             if (clientToken == null) {
-                clientToken = UUID.randomUUID().toString();
+                clientToken = UnsignedUUID.GenerateUUID();
             }
-            String accessToken = UUID.randomUUID().toString();
+            String accessToken = UnsignedUUID.GenerateUUID();
 
             // 颁发令牌
             Token token = new Token();
@@ -88,7 +86,7 @@ public class Authenticate implements HttpHandler {
                 response.put("user", user.serialToJSONObject());
             }
             Response.success_200(exchange, response);
-        } catch (IOException | SQLException e) {
+        } catch (Exception e) {
             exchange.close();
             MyLogger.debug(e);
         }

@@ -10,12 +10,12 @@ import site.deercloud.identityverification.SQLite.SqlManager;
 import site.deercloud.identityverification.SQLite.TokenDAO;
 import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
+import site.deercloud.identityverification.Utils.UnsignedUUID;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.UUID;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 
@@ -50,7 +50,7 @@ public class Refresh implements HttpHandler {
 
             // 删除原先的令牌 并生成新的令牌
             TokenDAO.deleteByAccessToken(accessToken);
-            new_token.accessToken = UUID.randomUUID().toString();
+            new_token.accessToken = UnsignedUUID.GenerateUUID();
             new_token.expiresAt = System.currentTimeMillis() + 432000000;
             // 选择角色的操作 要求原令牌所绑定的角色为空
             if (!body.getJSONObject("selectedProfile").isEmpty()) {

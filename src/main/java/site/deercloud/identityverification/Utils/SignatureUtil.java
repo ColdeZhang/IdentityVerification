@@ -8,6 +8,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import org.apache.commons.codec.binary.Base64;
 
+// 作者: https://www.jianshu.com/p/c7d09ed656b1
 public class SignatureUtil {
     private final static String SIGN_TYPE_RSA = "RSA";
     private final static String SIGN_ALGORITHMS = "SHA1WithRSA";

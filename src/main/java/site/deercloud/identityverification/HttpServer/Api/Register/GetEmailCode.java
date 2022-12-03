@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import site.deercloud.identityverification.Controller.EmailCodeCache;
+import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.EmailSender;
 import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Utils.RandomCode;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
@@ -25,8 +27,11 @@ public class GetEmailCode implements HttpHandler {
             JSONObject request = getBody(exchange);
             String email = request.getString("email");
 
-            // TODO: 验证邮箱唯一性
-
+            // 验证邮箱唯一性
+            if (UserDAO.selectByEmail(email) != null) {
+                jsonResponse(exchange, 400, "此邮箱已被注册。", null);
+                return;
+            }
             if (!EmailCodeCache.isEmailCodeExpired(email)) {
                 jsonResponse(exchange, 500, "禁止频繁操作！", null);
                 return;
@@ -40,7 +45,7 @@ public class GetEmailCode implements HttpHandler {
             EmailCodeCache.addEmailCode(email, code);
 
             jsonResponse(exchange, 200, "发送成功，请在五分钟内完成注册。", null);
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             exchange.close();
             MyLogger.debug(e);
         }

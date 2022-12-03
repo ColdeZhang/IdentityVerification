@@ -1,9 +1,11 @@
 package site.deercloud.identityverification.SQLite;
 
 import site.deercloud.identityverification.HttpServer.model.Profile;
+import site.deercloud.identityverification.Utils.MyLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -54,15 +56,16 @@ public class ProfileDAO {
         String sql = "SELECT * FROM profile WHERE uuid = ?";
         PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, uuid);
+        ResultSet resultSet = preparedStatement.executeQuery();
         Profile profile = new Profile();
-        if (preparedStatement.executeQuery().next()) {
-            profile.uuid = preparedStatement.getResultSet().getString("uuid");
-            profile.belongTo = preparedStatement.getResultSet().getString("belong_to");
-            profile.name = preparedStatement.getResultSet().getString("name");
-            profile.textures = preparedStatement.getResultSet().getString("textures");
-            profile.textures_signature = preparedStatement.getResultSet().getString("textures_signature");
-            profile.uploadableTextures = preparedStatement.getResultSet().getString("uploadableTextures");
-            profile.uploadableTextures_signature = preparedStatement.getResultSet().getString("uploadableTextures_signature");
+        if (resultSet.next()) {
+            profile.uuid = resultSet.getString("uuid");
+            profile.belongTo = resultSet.getString("belong_to");
+            profile.name = resultSet.getString("name");
+            profile.textures = resultSet.getString("textures");
+            profile.textures_signature = resultSet.getString("textures_signature");
+            profile.uploadableTextures = resultSet.getString("uploadableTextures");
+            profile.uploadableTextures_signature = resultSet.getString("uploadableTextures_signature");
             return profile;
         }
         return null;
@@ -73,16 +76,18 @@ public class ProfileDAO {
         PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, belongTo);
         ArrayList<Profile> profiles = new ArrayList<>();
-        while (preparedStatement.executeQuery().next()) {
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
             Profile profile = new Profile();
-            profile.uuid = preparedStatement.executeQuery().getString("uuid");
+            profile.uuid = resultSet.getString("uuid");
             profile.belongTo = belongTo;
-            profile.name = preparedStatement.executeQuery().getString("name");
-            profile.textures = preparedStatement.executeQuery().getString("textures");
-            profile.textures_signature = preparedStatement.executeQuery().getString("textures_signature");
-            profile.uploadableTextures = preparedStatement.executeQuery().getString("uploadableTextures");
-            profile.uploadableTextures_signature = preparedStatement.executeQuery().getString("uploadableTextures_signature");
+            profile.name = resultSet.getString("name");
+            profile.textures = resultSet.getString("textures");
+            profile.textures_signature = resultSet.getString("textures_signature");
+            profile.uploadableTextures = resultSet.getString("uploadableTextures");
+            profile.uploadableTextures_signature = resultSet.getString("uploadableTextures_signature");
             profiles.add(profile);
+            MyLogger.debug(profile.serialToJSONObject(true, true).toString());
         }
         return profiles;
     }

@@ -1,6 +1,7 @@
 package site.deercloud.identityverification.SQLite;
 
 import site.deercloud.identityverification.HttpServer.model.InviteCode;
+import site.deercloud.identityverification.Utils.MyLogger;
 
 import java.sql.*;
 import java.util.HashSet;

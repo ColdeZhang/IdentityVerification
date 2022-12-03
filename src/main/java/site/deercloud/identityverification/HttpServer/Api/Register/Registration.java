@@ -12,8 +12,8 @@ import site.deercloud.identityverification.SQLite.InviteRelationDAO;
 import site.deercloud.identityverification.SQLite.ProfileDAO;
 import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
+import site.deercloud.identityverification.Utils.UnsignedUUID;
 
-import java.util.UUID;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
@@ -40,8 +40,11 @@ public class Registration implements HttpHandler {
 
             String profile_name = jsonObject.getString("profile_name");
 
-            // TODO: 验证邮箱唯一性
-
+            // 验证邮箱唯一性
+            if (UserDAO.selectByEmail(email) != null) {
+                jsonResponse(exchange, 400, "此邮箱已被注册。", null);
+                return;
+            }
             // 验证邮箱验证码
             if (EmailCodeCache.isEmailCodeExpired(email)) {
                 jsonResponse(exchange, 500, "邮箱验证码无效，请重新获取。", null);
@@ -61,7 +64,7 @@ public class Registration implements HttpHandler {
                 jsonResponse(exchange, 400, "邀请码不存在或已被使用！", null);
                 return;
             }
-            String new_uuid = UUID.randomUUID().toString();
+            String new_uuid = UnsignedUUID.GenerateUUID();
             String inviteCodeOwner = InviteCodeDAO.getInviterUUID(inviteCode);
             // 创建邀请关系
             InviteRelationDAO.insert(new_uuid, inviteCodeOwner, System.currentTimeMillis());
@@ -81,9 +84,9 @@ public class Registration implements HttpHandler {
             // 创建一个默认角色
             Profile profile = new Profile();
             profile.name = profile_name;
-            profile.uuid = UUID.randomUUID().toString();
+            profile.uuid = UnsignedUUID.GenerateUUID();
             profile.belongTo = user.uuid;
-            Texture texture = Texture.newDefault(profile.uuid);
+            Texture texture = Texture.newDefault(profile.name);
             profile.textures = texture.serialWithBase64();
             profile.textures_signature = texture.sign();
             ProfileDAO.insert(profile);

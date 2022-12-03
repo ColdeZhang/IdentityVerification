@@ -5,14 +5,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import site.deercloud.identityverification.Controller.AFKTracker;
 import site.deercloud.identityverification.Controller.GameSessionCache;
 import site.deercloud.identityverification.SQLite.BanListDAO;
-import site.deercloud.identityverification.SQLite.SqlManager;
 import site.deercloud.identityverification.SQLite.WhiteListDAO;
 import site.deercloud.identityverification.Controller.ConfigManager;
+import site.deercloud.identityverification.Utils.UnsignedUUID;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
@@ -31,18 +29,18 @@ public class Events implements Listener {
             String ban_time = sdf.format(BanListDAO.getBanTimeById(ban_record_id));
             player.kickPlayer("你已被封禁，请联系管理员。原因：[ " + ban_reason + " ]" + " 至：" + ban_time);
         }
-        GameSessionCache.addSession(event.getPlayer().getUniqueId());
+        GameSessionCache.addSession(UnsignedUUID.UnUUIDof(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerJoinEvent event) throws SQLException {
-        GameSessionCache.removeSession(event.getPlayer().getUniqueId());
+        GameSessionCache.removeSession(UnsignedUUID.UnUUIDof(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) throws SQLException {
         Player player = event.getPlayer();
-        IdentityVerification.getAfkTracker().performedAction(player.getUniqueId(), System.currentTimeMillis());
+        IdentityVerification.getAfkTracker().performedAction(UnsignedUUID.UnUUIDof(event.getPlayer()), System.currentTimeMillis());
     }
 
     ConfigManager configManager = IdentityVerification.getInstance().getConfigManager();

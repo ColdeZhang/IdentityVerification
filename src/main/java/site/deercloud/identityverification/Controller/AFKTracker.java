@@ -6,14 +6,13 @@ import site.deercloud.identityverification.IdentityVerification;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 public class AFKTracker {
 
 
     public static final long IGNORES_AFK = -1L;
 
-    private final Set<UUID> usedAFKCommand;
+    private final Set<String> usedAFKCommand;
 
     private Long afkThresholdMs;
     private final IdentityVerification plugin;
@@ -30,26 +29,26 @@ public class AFKTracker {
         return afkThresholdMs;
     }
 
-    public void hasIgnorePermission(UUID playerUUID) {
+    public void hasIgnorePermission(String playerUUID) {
         storeLastMovement(playerUUID, IGNORES_AFK);
     }
 
-    private void storeLastMovement(UUID playerUUID, long time) {
+    private void storeLastMovement(String playerUUID, long time) {
         GameSessionCache.getCacheSession(playerUUID)
                 .ifPresent(gameSession -> gameSession.setLastMovement(time));
     }
 
-    private long getLastMovement(UUID playerUUID, long time) {
+    private long getLastMovement(String playerUUID, long time) {
         return getLastMovement(playerUUID)
                 .orElse(time);
     }
 
-    private Optional<Long> getLastMovement(UUID playerUUID) {
+    private Optional<Long> getLastMovement(String playerUUID) {
         return GameSessionCache.getCacheSession(playerUUID)
                 .map(GameSession::getLastMovement);
     }
 
-    public void usedAfkCommand(UUID playerUUID, long time) {
+    public void usedAfkCommand(String playerUUID, long time) {
         long lastMoved = getLastMovement(playerUUID, time);
         if (lastMoved == IGNORES_AFK) {
             return;
@@ -58,7 +57,7 @@ public class AFKTracker {
         storeLastMovement(playerUUID, time - getAfkThreshold());
     }
 
-    public long performedAction(UUID playerUUID, long time) {
+    public long performedAction(String playerUUID, long time) {
         long lastMoved = getLastMovement(playerUUID, time);
         // Ignore afk permission
         if (lastMoved == IGNORES_AFK) {
@@ -83,13 +82,13 @@ public class AFKTracker {
         }
     }
 
-    public long loggedOut(UUID uuid, long time) {
+    public long loggedOut(String uuid, long time) {
         long timeAFK = performedAction(uuid, time);
         usedAFKCommand.remove(uuid);
         return timeAFK;
     }
 
-    public boolean isAfk(UUID playerUUID) {
+    public boolean isAfk(String playerUUID) {
         long time = System.currentTimeMillis();
 
         Optional<Long> lastMoved = getLastMovement(playerUUID);

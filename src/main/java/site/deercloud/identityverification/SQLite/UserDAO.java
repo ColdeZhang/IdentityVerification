@@ -2,17 +2,14 @@ package site.deercloud.identityverification.SQLite;
 
 import site.deercloud.identityverification.HttpServer.model.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class UserDAO {
     public static void createTable() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS user (\n"
                 + "	uuid text PRIMARY KEY,\n"           // UUID
                 + "	email text NOT NULL,\n"             // 邮箱
-                + "	password text NOT NULL,\n"          // 密码
+                + "	password integer NOT NULL,\n"          // 密码
                 + "	create_time integer NOT NULL,\n"    // 数据创建时间
                 + " update_time integer NOT NULL\n"     // 数据更新时间
                 + ");";
@@ -26,7 +23,7 @@ public class UserDAO {
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, user.uuid);
         prep.setString(2, user.email);
-        prep.setString(3, user.password);
+        prep.setLong(3, user.password.hashCode());
         prep.setLong(4, System.currentTimeMillis());
         prep.setLong(5, System.currentTimeMillis());
         prep.executeUpdate();
@@ -36,7 +33,7 @@ public class UserDAO {
         String sql = "UPDATE user SET email = ?, password = ?, update_time = ? WHERE uuid = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, user.email);
-        prep.setString(2, user.password);
+        prep.setLong(2, user.password.hashCode());
         prep.setLong(3, System.currentTimeMillis());
         prep.setString(4, user.uuid);
         prep.executeUpdate();
@@ -56,7 +53,6 @@ public class UserDAO {
         User user = new User();
         user.uuid = uuid;
         user.email = prep.executeQuery().getString("email");
-        user.password = prep.executeQuery().getString("password");
         user.createTime = prep.executeQuery().getLong("create_time");
         user.updateTime = prep.executeQuery().getLong("update_time");
         return user;
@@ -66,13 +62,13 @@ public class UserDAO {
         String sql = "SELECT * FROM user WHERE email = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, email);
-        if (prep.executeQuery().next()) {
+        ResultSet rs = prep.executeQuery();
+        if (rs.next()) {
             User user = new User();
-            user.uuid = prep.executeQuery().getString("uuid");
+            user.uuid = rs.getString("uuid");
             user.email = email;
-            user.password = prep.executeQuery().getString("password");
-            user.createTime = prep.executeQuery().getLong("create_time");
-            user.updateTime = prep.executeQuery().getLong("update_time");
+            user.createTime = rs.getLong("create_time");
+            user.updateTime = rs.getLong("update_time");
             return user;
         } else {
             return null;
@@ -82,8 +78,9 @@ public class UserDAO {
     public static Boolean checkPassword(String email, String password) throws SQLException {
         String sql = "SELECT * FROM user WHERE email = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
+        prep.setString(1, email);
         if (prep.executeQuery().next()) {
-            return prep.executeQuery().getString("password").equals(password);
+            return prep.executeQuery().getLong("password") == password.hashCode();
         } else {
             return false;
         }
