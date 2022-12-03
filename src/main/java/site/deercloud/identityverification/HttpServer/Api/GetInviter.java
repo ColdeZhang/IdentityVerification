@@ -13,8 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
 public class GetInviter implements HttpHandler {
@@ -22,11 +21,7 @@ public class GetInviter implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("GET")) {
-                jsonResponse(exchange, 405, "Method Not Allowed", null);
-                return;
-            }
+            requestHeader(exchange, "GET");
 
             Map<String, String> params = getQuery(exchange);
 

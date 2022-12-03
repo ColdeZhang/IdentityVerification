@@ -14,18 +14,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBodyArray;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
 
 public class GetProfiles implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("POST")) {
-                Response.err_method_not_allowed(exchange);
-                return;
-            }
+            requestHeader(exchange, "POST");
             JSONArray profiles_json = getBodyArray(exchange);
             if (profiles_json.size() > 5) {
                 Response.success_no_content(exchange);

@@ -13,19 +13,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
 
 public class Login implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("POST")) {
-                Response.err_method_not_allowed(exchange);
-                return;
-            }
+            requestHeader(exchange, "POST");
             JSONObject request = getBody(exchange);
             String username = request.getString("username");
             String password = request.getString("password");

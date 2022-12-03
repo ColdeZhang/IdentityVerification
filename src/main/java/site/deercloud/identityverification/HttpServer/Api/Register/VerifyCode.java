@@ -11,17 +11,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getQuery;
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
+
 public class VerifyCode implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("GET")){
-                jsonResponse(exchange, 405, "Method Not Allowed", null);
-                return;
-            }
+            requestHeader(exchange, "GET");
             Map<String, String> params = getQuery(exchange);
             String code = params.get("code");
 

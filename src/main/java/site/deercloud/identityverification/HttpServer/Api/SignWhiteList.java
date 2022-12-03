@@ -14,19 +14,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Objects;
 
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
 public class SignWhiteList implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("POST")){
-                jsonResponse(exchange, 405, "Method Not Allowed", null);
-                return;
-            }
+            requestHeader(exchange, "POST");
             JSONObject jsonObject = getBody(exchange);
 
             String id = jsonObject.getString("id");                     // 身份证（实名认证用）

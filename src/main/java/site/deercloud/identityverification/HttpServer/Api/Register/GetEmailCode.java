@@ -13,20 +13,19 @@ import site.deercloud.identityverification.Utils.RandomCode;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
 
 public class GetEmailCode implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("POST")){
-                jsonResponse(exchange, 405, "Method Not Allowed", null);
-                return;
-            }
+            requestHeader(exchange, "POST");
             JSONObject request = getBody(exchange);
             String email = request.getString("email");
+            if (email == null || email.equals("")){
+                jsonResponse(exchange, 400, "邮箱不能为空", null);
+                return;
+            }
 
             // 验证邮箱唯一性
             if (UserDAO.selectByEmail(email) != null) {

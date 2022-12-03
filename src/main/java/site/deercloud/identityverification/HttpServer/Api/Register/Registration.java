@@ -15,20 +15,14 @@ import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Utils.UnsignedUUID;
 
 
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.getBody;
-import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
 import static site.deercloud.identityverification.Utils.Utils.*;
 
 public class Registration implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
-            // 设置响应头
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("POST")){
-                jsonResponse(exchange, 405, "Method Not Allowed", null);
-                return;
-            }
+            requestHeader(exchange, "POST");
 
             JSONObject jsonObject = getBody(exchange);
 

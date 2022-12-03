@@ -14,6 +14,9 @@ import { h } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
 import { NMenu, NGrid, NGridItem, NLayout, NLayoutHeader, NLayoutContent, NLayoutFooter } from 'naive-ui';
 import type { MenuOption } from 'naive-ui'
+import axios from "axios";
+
+axios.defaults.baseURL = 'http://127.0.0.1:11520/';
 
 </script>
 

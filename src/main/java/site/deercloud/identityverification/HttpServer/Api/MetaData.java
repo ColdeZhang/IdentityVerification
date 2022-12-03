@@ -9,17 +9,13 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.jsonResponse;
+import static site.deercloud.identityverification.HttpServer.HttpServerManager.requestHeader;
 
 public class MetaData implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
-            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
-            if (!exchange.getRequestMethod().equals("GET")){
-                exchange.sendResponseHeaders(405, 0);
-                exchange.close();
-                return;
-            }
+            requestHeader(exchange, "GET");
             String title = "A Minecraft Server";
             String description = "Minecraft is a 3D sandbox game developed by Mojang Studios where players interact with a fully modifiable three-dimensional environment made of blocks and entities. ";
             Boolean use_yag = true;         // 是否使用外置登录

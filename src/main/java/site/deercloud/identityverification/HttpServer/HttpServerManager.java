@@ -121,6 +121,21 @@ public class HttpServerManager {
         exchange.getResponseBody().close();
     }
 
+    public static boolean requestHeader(HttpExchange exchange, String Method) {
+        try {
+            exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+            if (!exchange.getRequestMethod().equals(Method)){
+                jsonResponse(exchange, 405, "Method Not Allowed", null);
+                return false;
+            }
+        } catch (IOException e) {
+            MyLogger.debug(e);
+        }
+        return true;
+    }
+
     public static JSONObject getBody(HttpExchange exchange) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"));
         StringBuilder requestBodyContent = new StringBuilder();
