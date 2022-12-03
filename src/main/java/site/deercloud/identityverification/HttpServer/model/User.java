@@ -7,6 +7,8 @@ public class User {
     public String uuid;
     public String password;
     public String email;
+    // 用户类型 0 普通用户 1 管理员 2 控制台用户
+    public Integer role = 0;
     public Long createTime;
     public Long updateTime;
 

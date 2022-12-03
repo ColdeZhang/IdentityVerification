@@ -14,21 +14,23 @@ public class InviteCodeDAO {
                 + "	inviter_uuid text NOT NULL,\n"         // 所有者
                 + "	create_time integer NOT NULL,\n"       // 创建时间
                 + "	is_used integer NOT NULL,\n"           // 是否被使用
-                + "	use_time integer NOT NULL\n"           // 使用时间
+                + "	use_time integer,\n"                   // 使用时间
+                + " invitee text \n"                       // 使用者
                 + ");";
         Statement stat = null;
         stat = SqlManager.session.createStatement();
         stat.executeUpdate(sql);
     }
 
-    public static void insert(String code, String inviterUUID, boolean isUsed, long useTime) throws SQLException {
-        String sql = "INSERT INTO invite_code(code,inviter_uuid,create_time,is_used,use_time) VALUES(?,?,?,?,?)";
+    public static void insert(InviteCode code) throws SQLException {
+        String sql = "INSERT INTO invite_code(code,inviter_uuid,create_time,is_used,use_time,invitee) VALUES(?,?,?,?,?,?)";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
-        prep.setString(1, code);
-        prep.setString(2, inviterUUID);
+        prep.setString(1, code.code);
+        prep.setString(2, code.inviter);
         prep.setLong(3, System.currentTimeMillis());
-        prep.setBoolean(4, isUsed);
-        prep.setLong(5, useTime);
+        prep.setBoolean(4, code.isUsed);
+        prep.setLong(5, code.usedTime);
+        prep.setString(6, code.invitee);
         prep.executeUpdate();
     }
 
@@ -54,24 +56,14 @@ public class InviteCodeDAO {
         return true;
     }
 
-    public static void setUsed(String code, boolean isUsed, long useTime) throws SQLException {
-        String sql = "UPDATE invite_code SET is_used = ?,use_time = ? WHERE code = ?";
+    public static void useBy(String code, String invitee) throws SQLException {
+        String sql = "UPDATE invite_code SET invitee = ?,is_used = ?,use_time = ? WHERE code = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
-        prep.setBoolean(1, isUsed);
-        prep.setLong(2, useTime);
+        prep.setString(1, invitee);
+        prep.setBoolean(2, true);
         prep.setString(3, code);
+        prep.setLong(4, System.currentTimeMillis());
         prep.executeUpdate();
-    }
-
-    public static long getUseTime(String code) throws SQLException {
-        String sql = "SELECT use_time FROM invite_code WHERE code = ?";
-        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
-        prep.setString(1, code);
-        ResultSet rs = prep.executeQuery();
-        if (rs.next()) {
-            return rs.getLong("use_time");
-        }
-        return 0;
     }
 
     public static Set<InviteCode> selectByInviter(String inviterUUID) throws SQLException {
@@ -87,6 +79,7 @@ public class InviteCodeDAO {
             inviteCode.createTime = rs.getLong("create_time");
             inviteCode.isUsed = rs.getBoolean("is_used");
             inviteCode.usedTime = rs.getLong("use_time");
+            inviteCode.invitee = rs.getString("invitee");
             inviteCodes.add(inviteCode);
         }
         return inviteCodes;

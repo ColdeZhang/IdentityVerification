@@ -76,6 +76,7 @@ public class EmailSender {
             return true;
         } catch (Exception e) {
             MyLogger.debug(e);
+            MyLogger.error("请检查邮箱配置是否正确，可能的问题解决方案：\n\t1.通常来说国内的邮箱服务要求发信人与账号保持一致；\n\t2.前往java的安装路径，找到jre/lib/security/java.security，删去 jdk.tls.disabledAlgorithms 部分的SSLv3, TLSv1, TLSv1.1；");
             return false;
         }
 

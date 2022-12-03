@@ -9,7 +9,8 @@ public class UserDAO {
         String sql = "CREATE TABLE IF NOT EXISTS user (\n"
                 + "	uuid text PRIMARY KEY,\n"           // UUID
                 + "	email text NOT NULL,\n"             // 邮箱
-                + "	password integer NOT NULL,\n"          // 密码
+                + "	password integer NOT NULL,\n"       // 密码
+                + " role integer NOT NULL,\n"           // 用户类型 0 普通用户 1 管理员 2 控制台用户
                 + "	create_time integer NOT NULL,\n"    // 数据创建时间
                 + " update_time integer NOT NULL\n"     // 数据更新时间
                 + ");";
@@ -19,22 +20,23 @@ public class UserDAO {
     }
 
     public static void insert(User user) throws SQLException {
-        String sql = "INSERT INTO user(uuid, email, password, create_time, update_time) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO user(uuid,email,password,role,create_time,update_time) VALUES(?,?,?,?,?,?)";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, user.uuid);
         prep.setString(2, user.email);
         prep.setLong(3, user.password.hashCode());
-        prep.setLong(4, System.currentTimeMillis());
+        prep.setInt(4, user.role);
         prep.setLong(5, System.currentTimeMillis());
+        prep.setLong(6, System.currentTimeMillis());
         prep.executeUpdate();
     }
 
     public static void update(User user) throws SQLException {
-        String sql = "UPDATE user SET email = ?, password = ?, update_time = ? WHERE uuid = ?";
+        String sql = "UPDATE user SET email = ?, password = ?, role = ? WHERE uuid = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, user.email);
         prep.setLong(2, user.password.hashCode());
-        prep.setLong(3, System.currentTimeMillis());
+        prep.setInt(3, user.role);
         prep.setString(4, user.uuid);
         prep.executeUpdate();
     }
@@ -53,6 +55,7 @@ public class UserDAO {
         User user = new User();
         user.uuid = uuid;
         user.email = prep.executeQuery().getString("email");
+        user.role = prep.executeQuery().getInt("role");
         user.createTime = prep.executeQuery().getLong("create_time");
         user.updateTime = prep.executeQuery().getLong("update_time");
         return user;
@@ -67,6 +70,25 @@ public class UserDAO {
             User user = new User();
             user.uuid = rs.getString("uuid");
             user.email = email;
+            user.role = prep.executeQuery().getInt("role");
+            user.createTime = rs.getLong("create_time");
+            user.updateTime = rs.getLong("update_time");
+            return user;
+        } else {
+            return null;
+        }
+    }
+
+    public static User selectByRole(Integer role) throws SQLException {
+        String sql = "SELECT * FROM user WHERE role = ?";
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
+        prep.setInt(1, role);
+        ResultSet rs = prep.executeQuery();
+        if (rs.next()) {
+            User user = new User();
+            user.uuid = rs.getString("uuid");
+            user.email = rs.getString("email");
+            user.role = role;
             user.createTime = rs.getLong("create_time");
             user.updateTime = rs.getLong("update_time");
             return user;

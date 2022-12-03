@@ -3,10 +3,13 @@ package site.deercloud.identityverification.Controller;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import site.deercloud.identityverification.HttpServer.model.User;
 import site.deercloud.identityverification.IdentityVerification;
+import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class ConfigManager {
@@ -26,7 +29,7 @@ public class ConfigManager {
         m_ImplementationName = config.getString("Web.ImplementationName");
         m_ImplementationVersion = config.getString("Web.ImplementationVersion");
         m_HomePageUrl = config.getString("Web.HomePageUrl");
-        m_RegisterUrl = m_HomePageUrl + "/register";
+        m_RegisterUrl = m_HomePageUrl + "/reg";
         m_WebHost = config.getString("Web.Host");
         m_WebPort = config.getInt("Web.Port");
         m_YagHost = config.getString("Yggdrasil.Host");
@@ -39,9 +42,6 @@ public class ConfigManager {
         m_EmailUsername = config.getString("Email.Username");
         m_EmailPassword = config.getString("Email.Password");
         m_EmailFrom = config.getString("Email.From");
-        // 加载配置文件夹下的RSA公钥 私钥
-        File publicKeyFile = new File(plugin.getDataFolder(), m_RsaPublicKeyFileName);
-        File privateKeyFile = new File(plugin.getDataFolder(), m_RsaPrivateKeyFileName);
         MyLogger.info("配置文件加载完成。");
     }
 
@@ -250,6 +250,8 @@ public class ConfigManager {
     private String m_EmailUsername;
     private String m_EmailPassword;
     private String m_EmailFrom;
+    private String m_AdminUsername;
+    private String m_AdminPassword;
 
     IdentityVerification plugin;
     FileConfiguration config;

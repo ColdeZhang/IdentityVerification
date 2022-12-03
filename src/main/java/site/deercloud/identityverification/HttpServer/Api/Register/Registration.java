@@ -64,18 +64,11 @@ public class Registration implements HttpHandler {
                 jsonResponse(exchange, 400, "邀请码不存在或已被使用！", null);
                 return;
             }
-            String new_uuid = UnsignedUUID.GenerateUUID();
-            String inviteCodeOwner = InviteCodeDAO.getInviterUUID(inviteCode);
-            // 创建邀请关系
-            InviteRelationDAO.insert(new_uuid, inviteCodeOwner, System.currentTimeMillis());
-            MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + new_uuid);
-            // 标记邀请码已使用
-            InviteCodeDAO.setUsed(inviteCode, true, System.currentTimeMillis());
-            MyLogger.debug("邀请码已标记为已使用：" + inviteCode);
+            String new_user_uuid = UnsignedUUID.GenerateUUID();
 
             // 创建用户
             User user = new User();
-            user.uuid = new_uuid;
+            user.uuid = new_user_uuid;
             user.email = email;
             user.password = password;
             UserDAO.insert(user);
@@ -91,6 +84,14 @@ public class Registration implements HttpHandler {
             profile.textures_signature = texture.sign();
             ProfileDAO.insert(profile);
             MyLogger.debug("角色创建成功：" + profile.uuid);
+
+            // 创建邀请关系
+            String inviteCodeOwner = InviteCodeDAO.getInviterUUID(inviteCode);
+            InviteRelationDAO.insert(profile.uuid, inviteCodeOwner, System.currentTimeMillis());
+            MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + profile.uuid);
+            // 标记邀请码已使用
+            InviteCodeDAO.useBy(inviteCode, profile.uuid);
+            MyLogger.debug("邀请码已标记为已使用：" + inviteCode);
 
             jsonResponse(exchange, 200, "注册成功！", null);
         } catch (Exception e) {

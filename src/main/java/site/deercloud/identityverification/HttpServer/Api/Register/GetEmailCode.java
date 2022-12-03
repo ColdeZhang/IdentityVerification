@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import site.deercloud.identityverification.Controller.EmailCodeCache;
+import site.deercloud.identityverification.IdentityVerification;
 import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.EmailSender;
 import site.deercloud.identityverification.Utils.MyLogger;
@@ -32,7 +33,7 @@ public class GetEmailCode implements HttpHandler {
                 jsonResponse(exchange, 400, "此邮箱已被注册。", null);
                 return;
             }
-            if (!EmailCodeCache.isEmailCodeExpired(email)) {
+            if (!EmailCodeCache.isEmailCodeExpired(email) && !IdentityVerification.getInstance().getConfigManager().getDebug()) {
                 jsonResponse(exchange, 500, "禁止频繁操作！", null);
                 return;
             }

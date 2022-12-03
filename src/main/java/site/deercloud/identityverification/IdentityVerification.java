@@ -15,6 +15,7 @@ import site.deercloud.identityverification.Controller.GameSessionCache;
 import site.deercloud.identityverification.Utils.UnsignedUUID;
 
 import java.sql.SQLException;
+import java.util.Objects;
 
 public final class IdentityVerification extends JavaPlugin {
 
@@ -28,19 +29,8 @@ public final class IdentityVerification extends JavaPlugin {
         afkTracker = new AFKTracker(this);
 
         // 初始化数据表
-        try {
-            sqlManager = new SqlManager();
-            if (!UserDAO.isEmailExist("console@mc.com")) {
-                // 生成控制台用户
-                User consoleUser = new User();
-                consoleUser.email = "console@mc.com";
-                consoleUser.uuid = UnsignedUUID.GenerateUUID();
-                consoleUser.password = "123456";
-                UserDAO.insert(consoleUser);
-            }
-        } catch (SQLException e) {
-            MyLogger.debug(e);
-        }
+        sqlManager = new SqlManager();
+
         // 初始化RSA
         File publicKeyPath = new File(this.getDataFolder(), configManager.getPublicKeyFileName());
         File privateKeyPath = new File(this.getDataFolder(), configManager.getPrivateKeyFileName());
@@ -61,9 +51,11 @@ public final class IdentityVerification extends JavaPlugin {
             configManager.setSignaturePublicKey(pubKeyContent);
             configManager.setSignaturePrivateKey(priKeyContent);
         }
-        // 注册事件 指令
-        this.getServer().getPluginManager().registerEvents(new Events(), this);
-        this.getCommand("identityverification").setExecutor(new Commands());
+
+        // 注册事件
+        getServer().getPluginManager().registerEvents(new Events(), this);
+        // 注册命令
+        Objects.requireNonNull(getCommand("identityverification")).setExecutor(new Commands());
 
     }
 
