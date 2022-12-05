@@ -20,7 +20,6 @@
 import { NStep, NSteps } from 'naive-ui';
 import { ref } from 'vue';
 
-const current = ref(1)
-const currentStatus = ref('process')
+defineProps(['current']);
 
 </script>

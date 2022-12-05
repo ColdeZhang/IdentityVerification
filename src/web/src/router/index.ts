@@ -10,12 +10,9 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/reg',
-      name: '注册',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/RegistrationView.vue')
+      path: '/newjoin',
+      name: '第一次加入',
+      component: () => import('../views/NewJoin.vue')
     }
   ]
 })

@@ -1,20 +1,26 @@
-# 服务器基本信息
+# 服务器基本信息(除了Host和Port是web服务的启动地址之外 其他的信息不具备功能性 只是用于网站上的展示)
 Web:
-  Host: 127.0.0.1
+  Host: 0.0.0.0
   Port: 11520
-  # 展示在网站的标题
+  # 服务器名字（用于展示）
   ServerName: 外置登录服务器
-  # 服务器核心
+  # 网站主页简介
+  Description: 这是一个有趣的服务器！
+  # 服务器核心（用于展示）
   ImplementationName: Bukkit
-  # 服务器版本
+  # 服务器版本（用于展示）
   ImplementationVersion: 1.19.2
-  # 用于展示的主页地址
-  HomePageUrl: https://example.com
+  # 网站地址（玩家访问的地址）
+  HomePageUrl: http://127.0.0.1:11520
+  # 展示在网站的认证服务器地址
+  YagdrasilUrl: http://0.0.0.0:11521
+  # 展示在网站的服务器地址
+  ServerUrl: mc-game.example.cn
 
 
 # Yggdrasil服务配置
 Yggdrasil:
-  Host: 127.0.0.1
+  Host: 0.0.0.0
   Port: 11521
   # 允许的皮肤站域名
   SkinDomains:
@@ -37,5 +43,7 @@ Email:
     Password: 123456
     # 邮箱发件人
     From: IV@example.com
+
+# 实名认证API配置
 
 Debug: false

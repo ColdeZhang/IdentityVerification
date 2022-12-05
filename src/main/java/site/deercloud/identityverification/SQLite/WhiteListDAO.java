@@ -41,4 +41,11 @@ public class WhiteListDAO {
         prep.setInt(1, idHash);
         return prep.executeQuery().next();
     }
+
+    public static String selectByID(Integer idHash) throws SQLException {
+        String sql = "SELECT * FROM white_list WHERE id_hash = ?";
+        PreparedStatement prep = SqlManager.session.prepareStatement(sql);
+        prep.setInt(1, idHash);
+        return prep.executeQuery().getString("uuid");
+    }
 }

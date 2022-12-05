@@ -18,7 +18,6 @@ public class SqlManager {
             SQLiteConfig config = new SQLiteConfig();
             config.setSharedCache(true);
             config.enableRecursiveTriggers(true);
-            config.setBusyTimeout(10000);
             SQLiteDataSource ds = new SQLiteDataSource(config);
             String url = System.getProperty("user.dir"); // 获取工作目录
             ds.setUrl("jdbc:sqlite:"+url+"/plugins/IdentityVerification/"+"IV-Database.db");

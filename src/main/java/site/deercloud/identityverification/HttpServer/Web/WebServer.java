@@ -26,8 +26,7 @@ public class WebServer implements HttpHandler {
                 return;
             }
             String file_content = new String(file.readAllBytes()).replace("127.0.0.1:11520",
-                    IdentityVerification.getInstance().getConfigManager().getWebHost()+
-                            ":"+IdentityVerification.getInstance().getConfigManager().getWebPort());
+                    IdentityVerification.getInstance().getConfigManager().getHomePageUrl());
             switch (file_type) {
                 case "js" -> exchange.getResponseHeaders().add("Content-Type", "application/javascript; charset=UTF-8");
                 case "css" -> exchange.getResponseHeaders().add("Content-Type", "text/css; charset=UTF-8");

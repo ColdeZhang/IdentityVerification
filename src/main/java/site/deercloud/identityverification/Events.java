@@ -9,6 +9,7 @@ import site.deercloud.identityverification.Controller.GameSessionCache;
 import site.deercloud.identityverification.SQLite.BanListDAO;
 import site.deercloud.identityverification.SQLite.WhiteListDAO;
 import site.deercloud.identityverification.Controller.ConfigManager;
+import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Utils.UnsignedUUID;
 
 import java.sql.SQLException;
@@ -18,7 +19,8 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws SQLException {
         Player player = event.getPlayer();
-        String uuid = player.getUniqueId().toString();
+        String uuid = UnsignedUUID.UnUUIDof(player);
+        MyLogger.debug(uuid);
         if (!WhiteListDAO.isUuidInWhiteList(uuid)) {
             player.kickPlayer("你没有完成白名单实名认证，请前往 " + configManager.getHomePageUrl() + " 进行认证。");
         }

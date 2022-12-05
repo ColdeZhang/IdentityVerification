@@ -51,6 +51,8 @@ public class HttpServerManager {
 
             webServer.createContext("/", new WebServer());
 
+            webServer.createContext("/api/webmeta", new WebMeta());
+
             webServer.createContext("/api/test", new Test());
             // 获取正版用户信息
             webServer.createContext("/api/getOnlineProfile", new GetOnlineProfile());
@@ -68,6 +70,8 @@ public class HttpServerManager {
             webServer.createContext("/api/signWhiteList", new SignWhiteList());
             // 获取邮箱验证码
             webServer.createContext("/api/getEmailCode", new GetEmailCode());
+            // 获取玩家头像
+            webServer.createContext("/api/getPlayerHead", new GetFace());
 
             // Yggdrasil API 元数据
             yagServer.createContext("/", new MetaData());
@@ -142,7 +146,7 @@ public class HttpServerManager {
     public static JSONObject getBody(HttpExchange exchange) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"));
         StringBuilder requestBodyContent = new StringBuilder();
-        String line = null;
+        String line;
         while ((line = bufferedReader.readLine()) != null) {
             requestBodyContent.append(line);
         }
@@ -153,7 +157,7 @@ public class HttpServerManager {
     public static JSONArray getBodyArray(HttpExchange exchange) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"));
         StringBuilder requestBodyContent = new StringBuilder();
-        String line = null;
+        String line;
         while ((line = bufferedReader.readLine()) != null) {
             requestBodyContent.append(line);
         }

@@ -29,7 +29,7 @@ public class ConfigManager {
         m_ImplementationName = config.getString("Web.ImplementationName");
         m_ImplementationVersion = config.getString("Web.ImplementationVersion");
         m_HomePageUrl = config.getString("Web.HomePageUrl");
-        m_RegisterUrl = m_HomePageUrl + "/reg";
+        m_RegisterUrl = m_HomePageUrl + "";
         m_WebHost = config.getString("Web.Host");
         m_WebPort = config.getInt("Web.Port");
         m_YagHost = config.getString("Yggdrasil.Host");
@@ -42,6 +42,9 @@ public class ConfigManager {
         m_EmailUsername = config.getString("Email.Username");
         m_EmailPassword = config.getString("Email.Password");
         m_EmailFrom = config.getString("Email.From");
+        m_Description = config.getString("Web.Description");
+        m_YagdrasilUrl = config.getString("Web.YagdrasilUrl");
+        m_ServerUrl = config.getString("Web.ServerUrl");
         MyLogger.info("配置文件加载完成。");
     }
 
@@ -228,6 +231,33 @@ public class ConfigManager {
         plugin.saveConfig();
     }
 
+    public String getDescription() {
+        return m_Description;
+    }
+    public void setDescription(String description) {
+        m_Description = description;
+        config.set("Web.Description", description);
+        plugin.saveConfig();
+    }
+
+    public String getYagdrasilUrl() {
+        return m_YagdrasilUrl;
+    }
+    public void setYagdrasilUrl(String yagdrasilUrl) {
+        m_YagdrasilUrl = yagdrasilUrl;
+        config.set("Yggdrasil.Url", yagdrasilUrl);
+        plugin.saveConfig();
+    }
+
+    public String getServerUrl() {
+        return m_ServerUrl;
+    }
+    public void setServerUrl(String serverUrl) {
+        m_ServerUrl = serverUrl;
+        config.set("Web.ServerUrl", serverUrl);
+        plugin.saveConfig();
+    }
+
     private String m_ServerName;
     private String m_ImplementationName;
     private String m_ImplementationVersion;
@@ -250,8 +280,9 @@ public class ConfigManager {
     private String m_EmailUsername;
     private String m_EmailPassword;
     private String m_EmailFrom;
-    private String m_AdminUsername;
-    private String m_AdminPassword;
+    private String m_Description;
+    private String m_YagdrasilUrl;
+    private String m_ServerUrl;
 
     IdentityVerification plugin;
     FileConfiguration config;

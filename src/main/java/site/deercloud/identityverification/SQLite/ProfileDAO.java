@@ -97,14 +97,15 @@ public class ProfileDAO {
         PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, name);
         Profile profile = new Profile();
-        if (preparedStatement.executeQuery().next()) {
-            profile.uuid = preparedStatement.getResultSet().getString("uuid");
-            profile.belongTo = preparedStatement.getResultSet().getString("belong_to");
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            profile.uuid = resultSet.getString("uuid");
+            profile.belongTo = resultSet.getString("belong_to");
             profile.name = name;
-            profile.textures = preparedStatement.getResultSet().getString("textures");
-            profile.textures_signature = preparedStatement.getResultSet().getString("textures_signature");
-            profile.uploadableTextures = preparedStatement.getResultSet().getString("uploadableTextures");
-            profile.uploadableTextures_signature = preparedStatement.getResultSet().getString("uploadableTextures_signature");
+            profile.textures = resultSet.getString("textures");
+            profile.textures_signature = resultSet.getString("textures_signature");
+            profile.uploadableTextures = resultSet.getString("uploadableTextures");
+            profile.uploadableTextures_signature = resultSet.getString("uploadableTextures_signature");
             return profile;
         }
         return null;

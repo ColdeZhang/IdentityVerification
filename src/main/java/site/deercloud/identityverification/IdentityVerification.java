@@ -40,9 +40,9 @@ public final class IdentityVerification extends JavaPlugin {
             MyLogger.error("RSA文件不存在, 插件退出。");
             this.getServer().getPluginManager().disablePlugin(this);
         }else {
-            pubKeyContent = pubKeyContent.replace("-----BEGIN PUBLIC KEY-----", "")
-                    .replace("-----END PUBLIC KEY-----", "")
-                    .replace("\n", "");
+//            pubKeyContent = pubKeyContent.replace("-----BEGIN PUBLIC KEY-----", "")
+//                    .replace("-----END PUBLIC KEY-----", "")
+//                    .replace("\n", "");
             priKeyContent = priKeyContent.replace("-----BEGIN PRIVATE KEY-----", "")
                     .replace("-----END PRIVATE KEY-----", "")
                     .replace("\n", "");

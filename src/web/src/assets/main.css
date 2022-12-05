@@ -12,7 +12,7 @@
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: rgb(69, 183, 145);
   transition: 0.4s;
 }
 
@@ -20,6 +20,11 @@ a,
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
   }
+}
+
+body {
+  display: flex;
+  place-items: center;
 }
 
 @media (min-width: 1024px) {

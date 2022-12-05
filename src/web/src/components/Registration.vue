@@ -1,21 +1,23 @@
 <template>
+    <h2>注册外置登录账号</h2>
+    <n-divider />
     <n-form>
         <n-grid :x-gap="12">
             <n-grid-item span="24">
                 <n-form-item label="电子邮箱">
-                    <n-input @input="checkEmail" placeholder="" v-model:value="email" />
+                    <n-input @input="checkEmail" placeholder="email@example.cn之类的东西" v-model:value="email" />
                 </n-form-item>
             </n-grid-item>
 
             <n-grid-item span="24">
                 <n-form-item label="设置密码">
-                    <n-input type="password" show-password-on="click" placeholder="" v-model:value="password" />
+                    <n-input @input="ifEverythingPassed" type="password" show-password-on="click" placeholder="嘘..." v-model:value="password" />
                 </n-form-item>
             </n-grid-item>
 
             <n-grid-item span="12">
                 <n-form-item label="创建一个游戏昵称">
-                    <n-input placeholder="" v-model:value="profile_name" />
+                    <n-input @input="ifEverythingPassed" placeholder="就是游戏里的名字" v-model:value="profile_name" />
                 </n-form-item>
             </n-grid-item>
 
@@ -27,19 +29,19 @@
 
             <n-grid-item span="12">
                 <n-form-item label="邀请码">
-                    <n-input placeholder="" v-model:value="invite_code" />
+                    <n-input @input="ifEverythingPassed" placeholder="记得点一下验证" v-model:value="invite_code" />
                 </n-form-item>
             </n-grid-item>
 
             <n-grid-item span="12">
                 <n-form-item label="&nbsp;">
-                    <n-button @click="onInviteCodeBtnClicked" style="width: 100%">{{ verify_invite_code_text }}</n-button>
+                    <n-button :disabled="verify_invite_code_btn_disabled" @click="onInviteCodeBtnClicked" style="width: 100%">{{ verify_invite_code_text }}</n-button>
                 </n-form-item>
             </n-grid-item>
 
             <n-grid-item span="12">
                 <n-form-item label="邮箱验证码">
-                    <n-input placeholder="" v-model:value="email_code" />
+                    <n-input @input="ifEverythingPassed" :disabled="!email_code_sended" placeholder="请先点击发送" v-model:value="email_code" />
                 </n-form-item>
             </n-grid-item>
 
@@ -52,16 +54,29 @@
 
             <n-grid-item span="24">
                 <n-form-item>
-                    <n-button :disabled="submit_btn_disabled" type="primary" @click="onSubmitBtnClicked" style="width: 100%;">{{submit_btn_text}}</n-button>
+                    <n-button :disabled="submit_btn_disabled" type="primary" @click="onSubmitBtnClicked " style="width: 100%;">{{submit_btn_text}}</n-button>
                 </n-form-item>
             </n-grid-item>
+
+            <n-grid-item span="24"><n-divider /></n-grid-item>
+            
+
+            <n-grid-item span="12">
+                 <n-button @click="$emit('geniue_btn_pressed')"  type="info" style="width: 100%;">我有正版账号</n-button>
+            </n-grid-item>
+
+            <n-grid-item span="12">
+                <n-button @click="$emit('ingeniue_btn_pressed')" type="primary" style="width: 100%;">我已经有账号了</n-button>
+            </n-grid-item>
+
+            
         </n-grid>
     </n-form>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { NButton, NForm, NFormItem, NInput, NGrid, NGridItem, useDialog, useNotification } from 'naive-ui'
+import { NButton, NForm, NFormItem, NInput, NGrid, NGridItem, useDialog, useNotification, NDivider } from 'naive-ui'
 import type { NotificationType } from 'naive-ui'
 import axios from "axios";
 
@@ -75,16 +90,30 @@ const send_code_text = ref('发送验证码')
 const send_code_btn_disabled = ref(false)
 
 const verify_invite_code_text = ref('验证邀请码')
+const verify_invite_code_btn_disabled = ref(false)
+
 
 const profile_name_text = ref('验证可用性')
 const profile_name_btn_disabled = ref(false)
 
 const submit_btn_text = ref('注册外置登录')
-const submit_btn_disabled = ref(false)
+const submit_btn_disabled = ref(true)
+
+const profile_name_passed = ref(false)
+const invite_code_passed = ref(false)
+const email_code_sended = ref(false)
 
 const dialog = useDialog()  // 弹窗
 const notification = useNotification()  // 通知
 
+const emit = defineEmits(['ingeniue_btn_pressed', 'geniue_btn_pressed'])
+
+// 检查是否可以启动提交
+function ifEverythingPassed() {
+    if (profile_name_passed.value && invite_code_passed.value && email_code_sended.value && email.value != '' && password.value != '' && email_code.value != '') {
+        submit_btn_disabled.value = false
+    }
+}
 
 // 发送邮件验证码
 function onSendEmail() {
@@ -118,9 +147,10 @@ function onSendEmail() {
             return
         }
         notify('success', '成功', response.data.msg)
+        email_code_sended.value = true
         sendMailCountDown();
+        ifEverythingPassed()
     });
-    
 }
 
 // 验证昵称
@@ -156,11 +186,48 @@ function onProfileNameBtnClicked() {
         }
         notify('success', '成功', response.data.msg)
         profile_name_text.value = '通过'
+        profile_name_passed.value = true
         profile_name_btn_disabled.value = false
+        ifEverythingPassed()
     });
 }
 
+// 验证邀请码按钮
 function onInviteCodeBtnClicked() {
+    verify_invite_code_btn_disabled.value = true
+    axios.get('/api/verifyCode', {
+        params: {
+            code: invite_code.value
+        }
+    }).then(function (response: any) {
+        if (response.data.code != 200) {
+            dialog.error({
+                title: '你是谁？',
+                content: response.data.msg,
+                positiveText: '知道了',
+            })
+            inviteCodeCountDown();
+            return
+        }
+        notify('success', '成功', response.data.msg)
+        invite_code_passed.value = true
+        verify_invite_code_text.value = '由 ' + response.data.data.inviter_name + ' 邀请'
+        ifEverythingPassed()
+    });
+}
+
+// 等待三十秒才能再次验证邀请码
+function inviteCodeCountDown() {
+    let count = 30
+    let timer = setInterval(() => {
+        count--
+        verify_invite_code_text.value = '等待 ' + count + ' 秒'
+        if (count == 0) {
+            clearInterval(timer)
+            verify_invite_code_text.value = '验证邀请码'
+            verify_invite_code_btn_disabled.value = false
+        }
+    }, 1000)
 }
 
 // 60秒后才能再次发送验证码
@@ -193,10 +260,13 @@ function profileNameCountDown() {
 
 // 正则表达式检查邮箱格式
 function checkEmail(email: string) {
+    ifEverythingPassed()
     let reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
     if (!reg.test(email)) {
+        send_code_btn_disabled.value = true
         return false;
     }
+    send_code_btn_disabled.value = false
     return true;
 }
 
@@ -219,7 +289,7 @@ function notify(type: NotificationType, content: string, meta: string) {
 }
 
 // 提交按钮
-function onSubmitBtnClicked() {
+function onSubmitBtnClicked(this: any) {
     submit_btn_disabled.value = true
     axios.post('/api/registration', {
         email: email.value,
@@ -238,6 +308,7 @@ function onSubmitBtnClicked() {
             return
         }
         notify('success', '成功', response.data.msg)
+        emit('ingeniue_btn_pressed')
     });
 }
 

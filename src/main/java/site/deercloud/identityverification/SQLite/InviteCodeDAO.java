@@ -60,7 +60,7 @@ public class InviteCodeDAO {
         String sql = "UPDATE invite_code SET invitee = ?,is_used = ?,use_time = ? WHERE code = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, invitee);
-        prep.setBoolean(2, true);
+        prep.setInt(2, 1);
         prep.setString(3, code);
         prep.setLong(4, System.currentTimeMillis());
         prep.executeUpdate();
