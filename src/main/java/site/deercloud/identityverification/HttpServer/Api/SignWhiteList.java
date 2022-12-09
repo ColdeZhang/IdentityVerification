@@ -75,6 +75,8 @@ public class SignWhiteList implements HttpHandler {
             // TODO: 调实名认证接口 不通过直接返回错误
             //
             //
+
+            // 将身份证号码的哈希值存库（不直接保存身份证号码，防止数据库泄漏）
             WhiteListDAO.insert(uuid, is_genuine, id.hashCode());
             jsonResponse(exchange, 200, "添加白名单成功！", null);
         } catch (Exception e) {
