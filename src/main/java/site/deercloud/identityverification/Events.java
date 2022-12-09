@@ -3,8 +3,7 @@ package site.deercloud.identityverification;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 import site.deercloud.identityverification.Controller.GameSessionCache;
 import site.deercloud.identityverification.SQLite.BanListDAO;
 import site.deercloud.identityverification.SQLite.WhiteListDAO;
@@ -21,8 +20,9 @@ public class Events implements Listener {
         Player player = event.getPlayer();
         String uuid = UnsignedUUID.UnUUIDof(player);
         MyLogger.debug(uuid);
-        if (!WhiteListDAO.isUuidInWhiteList(uuid)) {
+        if (!WhiteListDAO.isUuidInWhiteList(uuid) && IdentityVerification.configManager.getWhiteList()) {
             player.kickPlayer("你没有完成白名单实名认证，请前往 " + configManager.getHomePageUrl() + " 进行认证。");
+            return;
         }
         Integer ban_record_id = BanListDAO.isBanned(uuid);
         if (ban_record_id > 0) {
@@ -30,20 +30,27 @@ public class Events implements Listener {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String ban_time = sdf.format(BanListDAO.getBanTimeById(ban_record_id));
             player.kickPlayer("你已被封禁，请联系管理员。原因：[ " + ban_reason + " ]" + " 至：" + ban_time);
+            return;
         }
         GameSessionCache.addSession(UnsignedUUID.UnUUIDof(event.getPlayer()));
+        IdentityVerification.activeIndexManager.updateIndex(player);
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerJoinEvent event) throws SQLException {
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        IdentityVerification.afkTracker.performedAction(event.getPlayer(), System.currentTimeMillis());
         GameSessionCache.removeSession(UnsignedUUID.UnUUIDof(event.getPlayer()));
     }
 
     @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) throws SQLException {
-        Player player = event.getPlayer();
-        IdentityVerification.getAfkTracker().performedAction(UnsignedUUID.UnUUIDof(event.getPlayer()), System.currentTimeMillis());
+    public void onPlayerMove(PlayerMoveEvent event) {
+        IdentityVerification.afkTracker.performedAction(event.getPlayer(), System.currentTimeMillis());
     }
 
-    ConfigManager configManager = IdentityVerification.getInstance().getConfigManager();
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        IdentityVerification.afkTracker.performedAction(event.getPlayer(), System.currentTimeMillis());
+    }
+
+    ConfigManager configManager = IdentityVerification.configManager;
 }

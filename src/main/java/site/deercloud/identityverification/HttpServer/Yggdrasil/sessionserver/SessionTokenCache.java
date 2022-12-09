@@ -1,14 +1,18 @@
 package site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver;
 
+import site.deercloud.identityverification.Utils.MyLogger;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class SessionTokenCache {
-    private Map<String, String> serverID_token;
-    private Map<String, String> serverID_ip;
-    private Map<String, Long> serverID_time;
+    private final Map<String, String> serverID_token = new HashMap<>();
+    private final Map<String, String> serverID_ip = new HashMap<>();
+    private final Map<String, Long> serverID_time = new HashMap<>();
 
     public void add(String serverID, String token, String ip){
+        MyLogger.debug("添加缓存令牌:" + serverID + " " + token + " " + ip);
         serverID_token.put(serverID, token);
         serverID_ip.put(serverID, ip);
         serverID_time.put(serverID, System.currentTimeMillis() + 30000);

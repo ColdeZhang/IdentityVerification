@@ -23,12 +23,12 @@ public class EmailCodeCache {
     }
 
     public static boolean isEmailCodeExpired(String email) {
-        if (IdentityVerification.getInstance().getConfigManager().getDebug()) return false;
+        if (IdentityVerification.configManager.getDebug()) return false;
         return getEmailCode(email).map(EmailCode::isExpired).orElse(true);
     }
 
     public static boolean isEmailCodeValid(String email, String code) {
-        if (IdentityVerification.getInstance().getConfigManager().getDebug()) return true;
+        if (IdentityVerification.configManager.getDebug()) return true;
         return getEmailCode(email).map(emailCode -> emailCode.code.equals(code)).orElse(false);
     }
 }

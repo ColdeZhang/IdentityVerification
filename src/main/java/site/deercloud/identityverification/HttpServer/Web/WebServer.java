@@ -18,15 +18,16 @@ public class WebServer implements HttpHandler {
             }
             String file_type = uri.substring(uri.lastIndexOf(".") + 1);
 
-            InputStream file =  IdentityVerification.getInstance().getResource("web" + uri);
+            InputStream file =  IdentityVerification.instance.getResource("web" + uri);
             if (file == null){
                 MyLogger.debug("File not found: " + uri);
                 exchange.sendResponseHeaders(404, 0);
                 exchange.close();
                 return;
             }
-            String file_content = new String(file.readAllBytes()).replace("127.0.0.1:11520",
-                    IdentityVerification.getInstance().getConfigManager().getHomePageUrl());
+            String file_content = new String(file.readAllBytes()).replace("http://127.0.0.1:11520",
+                    IdentityVerification.configManager.getHomePageUrl()).
+                    replace("XXXXX_Server", IdentityVerification.configManager.getServerName());
             switch (file_type) {
                 case "js" -> exchange.getResponseHeaders().add("Content-Type", "application/javascript; charset=UTF-8");
                 case "css" -> exchange.getResponseHeaders().add("Content-Type", "text/css; charset=UTF-8");

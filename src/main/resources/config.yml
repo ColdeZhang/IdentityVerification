@@ -31,6 +31,7 @@ Yggdrasil:
   # RSA 私钥文件路径
   RsaPrivateKey: id_rsa
 
+
 # 邮箱配置
 Email:
     # 邮箱服务器地址
@@ -46,4 +47,7 @@ Email:
 
 # 实名认证API配置
 
+# 是否启用白名单
+WhiteList: true
+# 调试模式（如果出现了问题 请打开调试并将报错复制以提交ISSUE）
 Debug: false

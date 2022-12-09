@@ -4,12 +4,16 @@
     <header>
     </header>
     <headerText>
-      |<RouterLink to="/"> <menuBtn>主页</menuBtn></RouterLink>|
-      <RouterLink to="/newjoin"><menuBtn>注册外置登录</menuBtn></RouterLink>|
-      <RouterLink to="/newjoin"><menuBtn>实名认证白名单</menuBtn></RouterLink>|
+      <n-grid x-gap="12">
+        <n-grid-item :span="6">
+          <RouterLink to="/">主页</RouterLink>
+        </n-grid-item>
+        <n-grid-item :span="6">
+          <RouterLink to="/newjoin">注册</RouterLink>
+        </n-grid-item>
+      </n-grid>
     </headerText>
     <main>
-
       <n-dialog-provider>
         <n-notification-provider>
           <RouterView />
@@ -23,7 +27,7 @@
 
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import { NDialogProvider, NNotificationProvider, NConfigProvider, useOsTheme, darkTheme, NH2 } from 'naive-ui';
+import { NDialogProvider, NNotificationProvider, NConfigProvider, useOsTheme, darkTheme, NH2, NGrid, NGridItem } from 'naive-ui';
 import axios from "axios";
 import { computed } from 'vue';
 
@@ -56,14 +60,14 @@ headerText {
   left: 0%;
   color: rgb(19, 10, 10);
   padding: 1em;
-  padding-left: 5rem;
+  padding-left: 2rem;
   z-index: 101;
 }
 
-menuBtn{
+menuBtn {
   top: 0;
   left: 0;
-  padding: 2em;
+  padding: 1em;
   font-size: larger;
   font-weight: bold;
 }

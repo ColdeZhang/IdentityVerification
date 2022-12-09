@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.sqlite.SQLiteConfig;
 import org.sqlite.SQLiteDataSource;
 import site.deercloud.identityverification.HttpServer.model.User;
-import site.deercloud.identityverification.IdentityVerification;
 import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Utils.UnsignedUUID;
 
@@ -20,7 +19,7 @@ public class SqlManager {
             config.enableRecursiveTriggers(true);
             SQLiteDataSource ds = new SQLiteDataSource(config);
             String url = System.getProperty("user.dir"); // 获取工作目录
-            ds.setUrl("jdbc:sqlite:"+url+"/plugins/IdentityVerification/"+"IV-Database.db");
+            ds.setUrl("jdbc:sqlite:"+url+"/plugins/IdentityVerification/"+"iv_database.db");
             session = ds.getConnection();
             createTables();
 
@@ -52,6 +51,8 @@ public class SqlManager {
             ProfileDAO.createTable();
             WhiteListDAO.createTable();
             TokenDAO.createTable();
+            PlayTimeDAO.createTable();
+            ActiveIndexDAO.createTable();
         } catch (SQLException e) {
             MyLogger.debug(e);
         }

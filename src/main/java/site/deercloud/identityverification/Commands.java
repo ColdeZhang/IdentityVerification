@@ -14,7 +14,7 @@ public class Commands implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         switch (args[0]) {
             case "reload":
-                IdentityVerification.getInstance().getConfigManager().reload(sender);
+                IdentityVerification.configManager.reload(sender);
                 break;
             case "genCode":
                 // TODO: 需要校验玩家是否符合活跃度要求

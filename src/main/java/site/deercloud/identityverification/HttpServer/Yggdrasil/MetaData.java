@@ -22,7 +22,7 @@ public class MetaData implements HttpHandler {
                 Response.err_method_not_allowed(exchange);
                 return;
             }
-            ConfigManager configManager = IdentityVerification.getInstance().getConfigManager();
+            ConfigManager configManager = IdentityVerification.configManager;
             JSONObject meta_json = new JSONObject();
             meta_json.put("serverName", configManager.getServerName());
             meta_json.put("implementationName", configManager.getImplementationName());

@@ -3,18 +3,15 @@ package site.deercloud.identityverification;
 import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import site.deercloud.identityverification.Controller.ActiveIndexManager;
 import site.deercloud.identityverification.HttpServer.HttpServerManager;
-import site.deercloud.identityverification.HttpServer.model.User;
 import site.deercloud.identityverification.SQLite.SqlManager;
-import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Controller.AFKTracker;
 import site.deercloud.identityverification.Controller.ConfigManager;
 import site.deercloud.identityverification.Utils.FileToString;
 import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Controller.GameSessionCache;
-import site.deercloud.identityverification.Utils.UnsignedUUID;
 
-import java.sql.SQLException;
 import java.util.Objects;
 
 public final class IdentityVerification extends JavaPlugin {
@@ -27,9 +24,10 @@ public final class IdentityVerification extends JavaPlugin {
         httpServerManager = new HttpServerManager(this);
         gameSessionCache = new GameSessionCache(this);
         afkTracker = new AFKTracker(this);
-
         // 初始化数据表
         sqlManager = new SqlManager();
+        // 初始化活跃度管理器
+        activeIndexManager = new ActiveIndexManager();
 
         // 初始化RSA
         File publicKeyPath = new File(this.getDataFolder(), configManager.getPublicKeyFileName());
@@ -39,10 +37,7 @@ public final class IdentityVerification extends JavaPlugin {
         if (pubKeyContent == null || priKeyContent == null) {
             MyLogger.error("RSA文件不存在, 插件退出。");
             this.getServer().getPluginManager().disablePlugin(this);
-        }else {
-//            pubKeyContent = pubKeyContent.replace("-----BEGIN PUBLIC KEY-----", "")
-//                    .replace("-----END PUBLIC KEY-----", "")
-//                    .replace("\n", "");
+        } else {
             priKeyContent = priKeyContent.replace("-----BEGIN PRIVATE KEY-----", "")
                     .replace("-----END PRIVATE KEY-----", "")
                     .replace("\n", "");
@@ -67,26 +62,11 @@ public final class IdentityVerification extends JavaPlugin {
         }
     }
 
-    public ConfigManager getConfigManager() {
-        return configManager;
-    }
-    public static IdentityVerification getInstance() {
-        return instance;
-    }
-    public static GameSessionCache getSessionCache() {
-        return gameSessionCache;
-    }
-    public static AFKTracker getAfkTracker() {
-        return afkTracker;
-    }
-    public static SqlManager getSqlManager() {
-        return sqlManager;
-    }
-
-    private HttpServerManager httpServerManager;
-    private ConfigManager configManager;
-    private static SqlManager sqlManager;
-    private static GameSessionCache gameSessionCache;
-    private static AFKTracker afkTracker;
-    private static IdentityVerification instance;
+    public static HttpServerManager httpServerManager;
+    public static ConfigManager configManager;
+    public static SqlManager sqlManager;
+    public static GameSessionCache gameSessionCache;
+    public static AFKTracker afkTracker;
+    public static IdentityVerification instance;
+    public static ActiveIndexManager activeIndexManager;
 }

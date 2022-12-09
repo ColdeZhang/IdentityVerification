@@ -23,6 +23,7 @@ public class Refresh implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
+            MyLogger.debug("Refresh post 接口触发");
             // 设置响应头
             exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
             if (!exchange.getRequestMethod().equals("POST")) {

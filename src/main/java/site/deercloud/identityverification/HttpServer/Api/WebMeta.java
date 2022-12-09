@@ -16,11 +16,11 @@ public class WebMeta implements HttpHandler {
     public void handle(HttpExchange exchange){
         try {
             requestHeader(exchange, "GET");
-            String title = IdentityVerification.getInstance().getConfigManager().getServerName();
-            String description =  IdentityVerification.getInstance().getConfigManager().getDescription();
-            String version =  IdentityVerification.getInstance().getConfigManager().getImplementationName() + "-" + IdentityVerification.getInstance().getConfigManager().getImplementationVersion();
-            String yagUrl = IdentityVerification.getInstance().getConfigManager().getYagdrasilUrl();
-            String serverUrl = IdentityVerification.getInstance().getConfigManager().getServerUrl();
+            String title = IdentityVerification.configManager.getServerName();
+            String description =  IdentityVerification.configManager.getDescription();
+            String version =  IdentityVerification.configManager.getImplementationName() + "-" + IdentityVerification.configManager.getImplementationVersion();
+            String yagUrl = IdentityVerification.configManager.getYagdrasilUrl();
+            String serverUrl = IdentityVerification.configManager.getServerUrl();
             Boolean use_yag = true;         // 是否使用外置登录
             Boolean use_genuine = true;     // 是否使用正版验证
             Boolean need_invite = true;     // 是否需要邀请码

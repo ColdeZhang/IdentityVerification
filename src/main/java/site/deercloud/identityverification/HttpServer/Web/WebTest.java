@@ -16,7 +16,7 @@ public class WebTest implements HttpHandler {
             String uri = exchange.getRequestURI().toString();
             // 按照uri从resource中读取文件返回
 
-            InputStream file =  IdentityVerification.getInstance().getResource("web" + uri);
+            InputStream file =  IdentityVerification.instance.getResource("web" + uri);
             if (file == null){
                 MyLogger.debug("File not found: " + uri);
                 exchange.sendResponseHeaders(404, 0);

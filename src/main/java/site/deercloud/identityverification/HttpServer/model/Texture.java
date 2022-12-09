@@ -44,7 +44,7 @@ public class Texture {
 
     public String sign() throws Exception {
         // 使用SHA1withRSA算法签名
-        String private_key_str = IdentityVerification.getInstance().getConfigManager().getSignaturePrivateKey();
+        String private_key_str = IdentityVerification.configManager.getSignaturePrivateKey();
         return SignatureUtil.sign(serialWithBase64(), private_key_str);
     }
 }

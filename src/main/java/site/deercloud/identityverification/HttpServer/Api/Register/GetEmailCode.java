@@ -32,7 +32,7 @@ public class GetEmailCode implements HttpHandler {
                 jsonResponse(exchange, 400, "此邮箱已被注册。", null);
                 return;
             }
-            if (!EmailCodeCache.isEmailCodeExpired(email) && !IdentityVerification.getInstance().getConfigManager().getDebug()) {
+            if (!EmailCodeCache.isEmailCodeExpired(email) && !IdentityVerification.configManager.getDebug()) {
                 jsonResponse(exchange, 500, "禁止频繁操作！", null);
                 return;
             }

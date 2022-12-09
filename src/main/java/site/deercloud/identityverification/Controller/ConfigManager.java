@@ -45,6 +45,7 @@ public class ConfigManager {
         m_Description = config.getString("Web.Description");
         m_YagdrasilUrl = config.getString("Web.YagdrasilUrl");
         m_ServerUrl = config.getString("Web.ServerUrl");
+        m_WhiteList = config.getBoolean("WhiteList");
         MyLogger.info("配置文件加载完成。");
     }
 
@@ -258,6 +259,15 @@ public class ConfigManager {
         plugin.saveConfig();
     }
 
+    public Boolean getWhiteList() {
+        return m_WhiteList;
+    }
+    public void setWhiteList(Boolean whiteList) {
+        m_WhiteList = whiteList;
+        config.set("WhiteList", whiteList);
+        plugin.saveConfig();
+    }
+
     private String m_ServerName;
     private String m_ImplementationName;
     private String m_ImplementationVersion;
@@ -283,6 +293,7 @@ public class ConfigManager {
     private String m_Description;
     private String m_YagdrasilUrl;
     private String m_ServerUrl;
+    private Boolean m_WhiteList;
 
     IdentityVerification plugin;
     FileConfiguration config;

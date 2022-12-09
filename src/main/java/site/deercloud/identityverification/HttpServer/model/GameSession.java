@@ -1,5 +1,7 @@
 package site.deercloud.identityverification.HttpServer.model;
 
+import site.deercloud.identityverification.Utils.MyLogger;
+
 public class GameSession {
     public GameSession() {
         joinTime = System.currentTimeMillis();
@@ -8,6 +10,7 @@ public class GameSession {
     }
 
     public void addAfkTime(long time) {
+        MyLogger.debug("addAfkTime:" + time);
         afkTime += time;
     }
 

@@ -20,6 +20,7 @@ public class Join implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
+            MyLogger.debug("Join post 接口触发");
             exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
             if (!exchange.getRequestMethod().equals("POST")){
                 Response.err_method_not_allowed(exchange);
@@ -29,15 +30,19 @@ public class Join implements HttpHandler {
             String accessToken = request.getString("accessToken");
             String selectedProfile = request.getString("selectedProfile");
             String serverId = request.getString("serverId");
+            MyLogger.debug("获取到的信息: accessToken: " + accessToken + " selectedProfile: " + selectedProfile + " serverId: " + serverId);
 
             Token token = TokenDAO.selectByAccessToken(accessToken);
             if (token == null || token.profileUUID == null || !token.profileUUID.equals(selectedProfile)){
+                MyLogger.debug("令牌无效:" + selectedProfile);
                 Response.err_invalid_token(exchange, "无效的令牌", "无效的令牌");
                 return;
             }
             // 缓存到内存中
             HttpServerManager.getSessionCache().add(serverId, token.accessToken, exchange.getRemoteAddress().getHostString());
+            MyLogger.debug("缓存令牌:" + token.accessToken + " serverID:" + serverId);
 
+            MyLogger.debug("准备返回204");
             Response.success_no_content(exchange);
         } catch (IOException | SQLException e) {
             exchange.close();

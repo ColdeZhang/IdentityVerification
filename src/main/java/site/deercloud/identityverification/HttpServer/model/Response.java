@@ -3,6 +3,7 @@ package site.deercloud.identityverification.HttpServer.model;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
+import site.deercloud.identityverification.Utils.MyLogger;
 
 import java.io.IOException;
 
@@ -56,6 +57,7 @@ public class Response {
     }
 
     public static void success_no_content(HttpExchange exchange) throws IOException {
+        MyLogger.debug("返回204");
         exchange.sendResponseHeaders(204, -1);
         exchange.getResponseBody().close();
     }

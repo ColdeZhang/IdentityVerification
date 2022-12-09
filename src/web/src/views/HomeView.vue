@@ -5,7 +5,7 @@
     <n-h3>{{server_url}}</n-h3>
     <n-h2>{{server_description}}</n-h2>
 
-    <n-button @click="join" strong secondary type="primary" size="large" >加入游戏</n-button>
+    <n-button @click="$router.push('/newjoin')" strong secondary type="primary" size="large" >加入游戏</n-button>
 
 </template>
 
@@ -30,8 +30,5 @@ onMounted(() => {
     });
 });
 
-function join(){
-    window.location.href = '/newjoin'
-}
 
 </script>

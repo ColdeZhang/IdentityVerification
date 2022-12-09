@@ -18,6 +18,7 @@ public class Invalidate implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
+            MyLogger.debug("Invalidate post 接口触发");
             exchange.getResponseHeaders().add("Content-Type", "application/json; charset=UTF-8");
             if (!exchange.getRequestMethod().equals("POST")) {
                 Response.err_method_not_allowed(exchange);

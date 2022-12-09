@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class HttpServerManager {
 
     public HttpServerManager(IdentityVerification plugin) {
-        configManager = plugin.getConfigManager();
+        configManager = IdentityVerification.configManager;
         // 注册路由
         try {
 
