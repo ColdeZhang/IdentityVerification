@@ -15,7 +15,7 @@ public class GetOnlineProfile implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
-            requestHeader(exchange, "GET");
+            if (!requestHeader(exchange, "GET")) return;
 
             Map<String, String> params = getQuery(exchange);
 

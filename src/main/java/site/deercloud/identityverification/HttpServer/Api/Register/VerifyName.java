@@ -24,7 +24,7 @@ public class VerifyName implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            requestHeader(exchange, "POST");
+            if (!requestHeader(exchange, "POST")) return;
             JSONObject request = getBody(exchange);
             String name = request.getString("profile_name");
             if (name == null || name.equals("")){

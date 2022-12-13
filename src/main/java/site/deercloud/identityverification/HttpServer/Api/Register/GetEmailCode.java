@@ -19,7 +19,7 @@ public class GetEmailCode implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            requestHeader(exchange, "POST");
+            if (!requestHeader(exchange, "POST")) return;
             JSONObject request = getBody(exchange);
             String email = request.getString("email");
             if (email == null || email.equals("")){

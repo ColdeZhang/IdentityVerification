@@ -90,7 +90,7 @@ public class ActiveIndexManager {
             activeIndex.oneWeekAgo = playtime2;
             activeIndex.twoWeekAgo = playtime3;
             activeIndex.index = Math.round((5.0 - (5.0 * average)) * 100) / 100.0;
-            MyLogger.debug("\t" + player.getName() + "当前的活跃度为" + activeIndex.index);
+            MyLogger.debug("\t" + player.getName() + "当前的活跃度为" + activeIndex.index + "/5.00");
 
             if (ActiveIndexDAO.query(uuid) == null) {
                 ActiveIndexDAO.insert(activeIndex);

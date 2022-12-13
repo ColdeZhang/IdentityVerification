@@ -15,7 +15,7 @@ public class Ban implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
-            requestHeader(exchange, "POST");
+            if (!requestHeader(exchange, "POST")) return;
 
             JSONObject jsonObject = getBody(exchange);
             String uuid = jsonObject.getString("uuid");

@@ -20,7 +20,7 @@ public class GetProfiles implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            requestHeader(exchange, "POST");
+            if (!requestHeader(exchange, "POST")) return;
             JSONArray profiles_json = getBodyArray(exchange);
             if (profiles_json.size() > 5) {
                 Response.success_no_content(exchange);

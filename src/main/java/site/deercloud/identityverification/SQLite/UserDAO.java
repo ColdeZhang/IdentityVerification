@@ -25,7 +25,7 @@ public class UserDAO {
         prep.setString(1, user.uuid);
         prep.setString(2, user.email);
         prep.setLong(3, user.password.hashCode());
-        prep.setInt(4, user.role);
+        prep.setInt(4, user.role.ordinal());
         prep.setLong(5, System.currentTimeMillis());
         prep.setLong(6, System.currentTimeMillis());
         prep.executeUpdate();
@@ -36,7 +36,7 @@ public class UserDAO {
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, user.email);
         prep.setLong(2, user.password.hashCode());
-        prep.setInt(3, user.role);
+        prep.setInt(3, user.role.ordinal());
         prep.setString(4, user.uuid);
         prep.executeUpdate();
     }
@@ -55,7 +55,7 @@ public class UserDAO {
         User user = new User();
         user.uuid = uuid;
         user.email = prep.executeQuery().getString("email");
-        user.role = prep.executeQuery().getInt("role");
+        user.role = User.ROLE.values()[prep.executeQuery().getInt("role")];
         user.createTime = prep.executeQuery().getLong("create_time");
         user.updateTime = prep.executeQuery().getLong("update_time");
         return user;
@@ -70,7 +70,7 @@ public class UserDAO {
             User user = new User();
             user.uuid = rs.getString("uuid");
             user.email = email;
-            user.role = prep.executeQuery().getInt("role");
+            user.role = User.ROLE.values()[rs.getInt("role")];
             user.createTime = rs.getLong("create_time");
             user.updateTime = rs.getLong("update_time");
             return user;
@@ -79,10 +79,10 @@ public class UserDAO {
         }
     }
 
-    public static User selectByRole(Integer role) throws SQLException {
+    public static User selectByRole(User.ROLE role) throws SQLException {
         String sql = "SELECT * FROM user WHERE role = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
-        prep.setInt(1, role);
+        prep.setInt(1, role.ordinal());
         ResultSet rs = prep.executeQuery();
         if (rs.next()) {
             User user = new User();

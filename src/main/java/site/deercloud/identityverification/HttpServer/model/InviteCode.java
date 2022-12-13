@@ -5,10 +5,11 @@ import site.deercloud.identityverification.Utils.RandomCode;
 public class InviteCode {
     public String code;
     public String inviter;
-    public String invitee;
+
     public Long createTime;
     public Boolean isUsed = false;
-    public Long usedTime;
+    public Long usedTime = -1L;
+    public String invitee = "null";
 
     public static InviteCode CreateWith(String ownerUuid) {
         InviteCode code = new InviteCode();

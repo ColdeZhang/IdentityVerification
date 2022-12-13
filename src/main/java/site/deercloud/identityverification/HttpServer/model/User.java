@@ -4,11 +4,17 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public class User {
+    public enum ROLE {
+        USER,
+        ADMIN,
+        CONSOLE
+    }
+
     public String uuid;
     public String password;
     public String email;
     // 用户类型 0 普通用户 1 管理员 2 控制台用户
-    public Integer role = 0;
+    public ROLE role = ROLE.USER;
     public Long createTime;
     public Long updateTime;
 

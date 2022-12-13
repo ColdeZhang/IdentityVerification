@@ -23,14 +23,14 @@ public class SqlManager {
             session = ds.getConnection();
             createTables();
 
-            User admin = UserDAO.selectByRole(3);
+            User admin = UserDAO.selectByRole(User.ROLE.CONSOLE);
             if (admin == null) {
                 // 生成控制台用户
                 User consoleUser = new User();
                 consoleUser.email = "admin";
                 consoleUser.uuid = UnsignedUUID.GenerateUUID();
                 consoleUser.password = "123456";
-                consoleUser.role = 3;
+                consoleUser.role = User.ROLE.CONSOLE;
                 UserDAO.insert(consoleUser);
                 MyLogger.info("控制台用户已生成，默认用户名：admin，密码：123456（控制台用户仅可登录网页后台，不可加入游戏。）");
                 MyLogger.warn("请尽快在控制台使用 /iv admin <用户名> <密码> 修改用户名密码");
@@ -64,7 +64,7 @@ public class SqlManager {
                 MyLogger.error(sender, "你没有权限执行此操作");
                 return;
             }
-            User admin = UserDAO.selectByRole(3);
+            User admin = UserDAO.selectByRole(User.ROLE.CONSOLE);
             if (admin == null) {
                 MyLogger.error("控制台用户不存在，请重启插件以生成。");
                 return;

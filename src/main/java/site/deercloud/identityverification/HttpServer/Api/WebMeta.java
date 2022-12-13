@@ -15,7 +15,7 @@ public class WebMeta implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
-            requestHeader(exchange, "GET");
+            if (!requestHeader(exchange, "GET")) return;
             String title = IdentityVerification.configManager.getServerName();
             String description =  IdentityVerification.configManager.getDescription();
             String version =  IdentityVerification.configManager.getImplementationName() + "-" + IdentityVerification.configManager.getImplementationVersion();

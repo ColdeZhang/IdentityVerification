@@ -22,7 +22,7 @@ public class Registration implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange){
         try {
-            requestHeader(exchange, "POST");
+            if (!requestHeader(exchange, "POST")) return;
 
             JSONObject jsonObject = getBody(exchange);
 
@@ -89,12 +89,13 @@ public class Registration implements HttpHandler {
             MyLogger.debug("角色创建成功：" + profile.uuid);
 
             // 创建邀请关系
-            String inviteCodeOwner = InviteCodeDAO.getInviterUUID(inviteCode);
-            InviteRelationDAO.insert(profile.uuid, inviteCodeOwner, System.currentTimeMillis());
-            MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + profile.uuid);
+            // String inviteCodeOwner = InviteCodeDAO.getInviterUUID(inviteCode);
+            // InviteRelationDAO.insert(profile.uuid, inviteCodeOwner, System.currentTimeMillis());
+            // MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + profile.uuid);
+
             // 标记邀请码已使用
             InviteCodeDAO.useBy(inviteCode, profile.uuid);
-            MyLogger.debug("邀请码已标记为已使用：" + inviteCode);
+            MyLogger.debug("邀请码" + inviteCode + "已标记为已使用，" + "使用人" + profile.uuid);
 
             jsonResponse(exchange, 200, "注册成功！", null);
         } catch (Exception e) {

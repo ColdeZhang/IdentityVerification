@@ -21,7 +21,7 @@ public class SignWhiteList implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         try {
-            requestHeader(exchange, "POST");
+            if (!requestHeader(exchange, "POST")) return;
             JSONObject jsonObject = getBody(exchange);
 
             String id = jsonObject.getString("id");                     // 身份证（实名认证用）

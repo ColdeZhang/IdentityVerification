@@ -35,7 +35,7 @@ public class InviteCodeManager {
                     MyLogger.warn(sender,"你没有的达到申请邀请码的要求！");
                 }
             } else {
-                User console = UserDAO.selectByRole(3);
+                User console = UserDAO.selectByRole(User.ROLE.CONSOLE);
                 if (console == null) {
                     MyLogger.warn(sender,"控制台用户不存在，请重启插件以生成");
                     return;
@@ -60,7 +60,7 @@ public class InviteCodeManager {
             if (sender instanceof Player) {
                 uuid = ((Player) sender).getUniqueId().toString();
             } else {
-                uuid = Objects.requireNonNull(UserDAO.selectByRole(3)).uuid;
+                uuid = Objects.requireNonNull(UserDAO.selectByRole(User.ROLE.CONSOLE)).uuid;
             }
             Set<InviteCode> codes = InviteCodeDAO.selectByInviter(uuid);
 

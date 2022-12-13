@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import site.deercloud.identityverification.Controller.WebTokenCache;
 import site.deercloud.identityverification.HttpServer.Api.Register.GetEmailCode;
 import site.deercloud.identityverification.HttpServer.Api.GetOnlineProfile;
 import site.deercloud.identityverification.HttpServer.Api.Register.Registration;
@@ -17,8 +18,11 @@ import site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver.Ge
 import site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver.HasJoined;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver.Join;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver.SessionTokenCache;
+import site.deercloud.identityverification.HttpServer.model.User;
+import site.deercloud.identityverification.HttpServer.model.WebToken;
 import site.deercloud.identityverification.IdentityVerification;
 import site.deercloud.identityverification.Controller.ConfigManager;
+import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
 
 import java.io.BufferedReader;
@@ -185,6 +189,35 @@ public class HttpServerManager {
             }
         });
         return result;
+    }
+
+    // 权限验证与访问控制拦截
+    public static boolean authorizationCheck(HttpExchange exchange, User.ROLE role) {
+        try {
+            String token_str = exchange.getRequestHeaders().getFirst("Authorization");
+            if (token_str == null) {
+                jsonResponse(exchange, 401, "你没有权限访问这个页面，请登录。", null);
+                return false;
+            }
+            WebToken webToken = WebToken.ParseWebTokenFromStr(token_str);
+            if (webToken == null) {
+                jsonResponse(exchange, 401, "你没有权限访问这个页面，令牌错误，请重新登录。", null);
+                return false;
+            }
+            if (!WebTokenCache.isWebTokenValid(webToken)) {
+                jsonResponse(exchange, 401, "你没有权限访问这个页面，登录过期，请重新登录。", null);
+                return false;
+            }
+            User user = UserDAO.selectByUuid(webToken.userUUID);
+            if (user.role.ordinal() < role.ordinal()) {
+                jsonResponse(exchange, 403, "你没有权限访问这个页面，权限不足。", null);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            MyLogger.debug(e);
+            return false;
+        }
     }
 
     public static SessionTokenCache getSessionCache() {
