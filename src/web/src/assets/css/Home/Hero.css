@@ -1,0 +1,50 @@
+.heroFrame{
+    /* 占满屏幕 */
+    width: 110%;
+    height: 100vh;
+    background-color: rgb(89, 182, 248);
+    /* background-image: url(https://sslbackend.deercloud.site:450/LightPicture/2022/12/96c042a9892388b6.jpg); */
+    align-self: center;
+    margin-left: -5%;
+    margin-top: -4%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.title {
+    font-size: 3rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.brief {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #ffffff;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.leftPart {
+    width: 30%;
+    height: 100%;
+    align-items: left;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    /* background-color: orange; */
+    padding: 2rem;
+}
+
+.rightPart {
+    width: 30%;
+    height: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    /* background-color: green; */
+}
