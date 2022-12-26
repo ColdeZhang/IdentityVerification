@@ -6,14 +6,21 @@ import java.sql.*;
 
 public class UserDAO {
     public static void createTable() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS user (\n"
-                + "	uuid text PRIMARY KEY,\n"           // UUID
-                + "	email text NOT NULL,\n"             // 邮箱
-                + "	password integer NOT NULL,\n"       // 密码
-                + " role integer NOT NULL,\n"           // 用户类型 0 普通用户 1 管理员 2 控制台用户
-                + "	create_time integer NOT NULL,\n"    // 数据创建时间
-                + " update_time integer NOT NULL\n"     // 数据更新时间
-                + ");";
+        // UUID
+        // 邮箱
+        // 密码
+        // 用户类型 0 普通用户 1 管理员 2 控制台用户
+        // 数据创建时间
+        // 数据更新时间
+        String sql = """
+                CREATE TABLE IF NOT EXISTS user (
+                	uuid text PRIMARY KEY,
+                	email text NOT NULL,
+                	password integer NOT NULL,
+                 role integer NOT NULL,
+                	create_time integer NOT NULL,
+                 update_time integer NOT NULL
+                );""";
         Statement stat;
         stat = SqlManager.session.createStatement();
         stat.executeUpdate(sql);
@@ -52,13 +59,18 @@ public class UserDAO {
         String sql = "SELECT * FROM user WHERE uuid = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, uuid);
-        User user = new User();
-        user.uuid = uuid;
-        user.email = prep.executeQuery().getString("email");
-        user.role = User.ROLE.values()[prep.executeQuery().getInt("role")];
-        user.createTime = prep.executeQuery().getLong("create_time");
-        user.updateTime = prep.executeQuery().getLong("update_time");
-        return user;
+        ResultSet res = prep.executeQuery();
+        if (res.next()) {
+            User user = new User();
+            user.uuid = uuid;
+            user.email = res.getString("email");
+            user.role = User.ROLE.values()[res.getInt("role")];
+            user.createTime = res.getLong("create_time");
+            user.updateTime = res.getLong("update_time");
+            return user;
+        }else {
+            return null;
+        }
     }
 
     public static User selectByEmail(String email) throws SQLException {

@@ -3,13 +3,12 @@ package site.deercloud.identityverification.Controller;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import site.deercloud.identityverification.HttpServer.model.InviteCode;
+import site.deercloud.identityverification.HttpServer.model.InviteRelation;
 import site.deercloud.identityverification.HttpServer.model.User;
-import site.deercloud.identityverification.SQLite.InviteCodeDAO;
-import site.deercloud.identityverification.SQLite.ProfileDAO;
-import site.deercloud.identityverification.SQLite.SqlManager;
-import site.deercloud.identityverification.SQLite.UserDAO;
+import site.deercloud.identityverification.SQLite.*;
 import site.deercloud.identityverification.Utils.MyLogger;
 import site.deercloud.identityverification.Utils.RandomCode;
+import site.deercloud.identityverification.Utils.UnsignedUUID;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,8 +26,8 @@ public class InviteCodeManager {
         try {
             if (sender instanceof Player) {
                 if (sender.isOp()) {
-                    User user = UserDAO.selectByUuid(((Player) sender).getUniqueId().toString());
-                    InviteCode code = InviteCode.CreateWith(user.uuid);
+                    String uuid = UnsignedUUID.UnUUIDof((Player) sender);
+                    InviteCode code = InviteCode.CreateWith(uuid);
                     InviteCodeDAO.insert(code);
                     MyLogger.info(sender, "邀请码为：" + code.code);
                 } else {
@@ -68,11 +67,18 @@ public class InviteCodeManager {
             for (InviteCode code : codes) {
                 SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String date = sdf.format(code.createTime);
-                sender.sendMessage("|" + code.code +
-                                "\t|" + date +
-                                "\t|" + (code.isUsed ? "已使用" : "未使用") +
-                                "\t|" + (code.isUsed ? Objects.requireNonNull(ProfileDAO.selectByUuid(code.invitee)).name : "未使用") +
-                                "\t|" + (code.isUsed ? sdf.format(code.usedTime) : "未使用") + "\t|");
+                String msg = "|" + code.code +
+                        "\t|" + date +
+                        "\t|" + (code.isUsed ? "已使用" : "未使用");
+                if (code.isUsed) {
+                    InviteRelation relation = InviteRelationDAO.selectByCode(code.code);
+                    if (relation == null) {
+                        continue;
+                    }
+                    msg += "\t|" + Objects.requireNonNull(ProfileDAO.selectByUuid(relation.invitee)).name +
+                            "\t|" + sdf.format(relation.createTime);
+                }
+                sender.sendMessage(msg);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

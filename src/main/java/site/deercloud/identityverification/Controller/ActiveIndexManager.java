@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class ActiveIndexManager {
 
-    public ActiveIndexManager() {
+    public static void updatePlayTimeThreshold() {
         try {
             ArrayList<ActiveIndex> activityRecords = ActiveIndexDAO.selectActivityRecords();
             if (activityRecords.size() == 0) {
@@ -33,7 +33,7 @@ public class ActiveIndexManager {
 
     }
 
-    private Long playtimeMsThreshold = 1000L * 60 * 30;
+    private static Long playtimeMsThreshold = 1000L * 60 * 30;
 
     public static final double VERY_ACTIVE = 3.75;
     public static final double ACTIVE = 3.0;
@@ -56,6 +56,9 @@ public class ActiveIndexManager {
     }
 
     public double updateIndex(Player player) {
+        // 更新基数
+        updatePlayTimeThreshold();
+
         String uuid = UnsignedUUID.UnUUIDof(player);
 
         long current = System.currentTimeMillis();
@@ -90,7 +93,6 @@ public class ActiveIndexManager {
             activeIndex.oneWeekAgo = playtime2;
             activeIndex.twoWeekAgo = playtime3;
             activeIndex.index = Math.round((5.0 - (5.0 * average)) * 100) / 100.0;
-            MyLogger.debug("\t" + player.getName() + "当前的活跃度为" + activeIndex.index + "/5.00");
 
             if (ActiveIndexDAO.query(uuid) == null) {
                 ActiveIndexDAO.insert(activeIndex);
@@ -98,7 +100,7 @@ public class ActiveIndexManager {
                 ActiveIndexDAO.update(activeIndex);
             }
 
-            return 5.0 - (5.0 * average);
+            return activeIndex.index;
         } catch (SQLException e) {
             MyLogger.debug(e);
         }

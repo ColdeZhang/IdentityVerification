@@ -1,30 +1,30 @@
 package site.deercloud.identityverification.SQLite;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.xml.transform.Result;
+import java.sql.*;
 
 public class WhiteListDAO {
     public static void createTable() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS white_list (\n"
-                + "	uuid text PRIMARY KEY,\n"       // UUID
-                + "	is_genuine integer NOT NULL,\n" // 是否为正版玩家
-                + "	id_hash integer NOT NULL,\n"       // 身份证号哈希值
-                + "	create_time integer NOT NULL\n" // 数据创建时间
-                + ");";
+        // UUID
+        // 身份证号哈希值
+        // 数据创建时间
+        String sql = """
+                CREATE TABLE IF NOT EXISTS white_list (
+                	uuid text PRIMARY KEY,
+                	id_hash integer NOT NULL,
+                	create_time integer NOT NULL
+                );""";
         Statement stat;
         stat = SqlManager.session.createStatement();
         stat.executeUpdate(sql);
     }
 
-    public static void insert(String uuid, boolean isGenuine, Integer idHash) throws SQLException {
-        String sql = "INSERT INTO white_list(uuid,is_genuine,id_hash,create_time) VALUES(?,?,?,?)";
+    public static void insert(String uuid, Integer idHash) throws SQLException {
+        String sql = "INSERT INTO white_list(uuid,id_hash,create_time) VALUES(?,?,?)";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, uuid);
-        prep.setBoolean(2, isGenuine);
-        prep.setInt(3, idHash);
-        prep.setLong(4, System.currentTimeMillis());
+        prep.setInt(2, idHash);
+        prep.setLong(3, System.currentTimeMillis());
         prep.executeUpdate();
     }
 
@@ -46,6 +46,11 @@ public class WhiteListDAO {
         String sql = "SELECT * FROM white_list WHERE id_hash = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setInt(1, idHash);
-        return prep.executeQuery().getString("uuid");
+        ResultSet result = prep.executeQuery();
+        if (result.next()) {
+            return result.getString("uuid");
+        } else {
+            return null;
+        }
     }
 }

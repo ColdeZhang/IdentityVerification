@@ -23,11 +23,9 @@ public final class IdentityVerification extends JavaPlugin {
         configManager = new ConfigManager(this);
         httpServerManager = new HttpServerManager(this);
         gameSessionCache = new GameSessionCache(this);
-        afkTracker = new AFKTracker(this);
+        afkTracker = new AFKTracker();
         // 初始化数据表
         sqlManager = new SqlManager();
-        // 初始化活跃度管理器
-        activeIndexManager = new ActiveIndexManager();
 
         // 初始化RSA
         File publicKeyPath = new File(this.getDataFolder(), configManager.getPublicKeyFileName());

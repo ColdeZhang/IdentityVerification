@@ -8,8 +8,8 @@ import site.deercloud.identityverification.Controller.WebTokenCache;
 import site.deercloud.identityverification.HttpServer.Api.Register.GetEmailCode;
 import site.deercloud.identityverification.HttpServer.Api.GetOnlineProfile;
 import site.deercloud.identityverification.HttpServer.Api.Register.Registration;
-import site.deercloud.identityverification.HttpServer.Api.Register.VerifyCode;
-import site.deercloud.identityverification.HttpServer.Api.Register.VerifyName;
+import site.deercloud.identityverification.HttpServer.Api.Profile.VerifyCode;
+import site.deercloud.identityverification.HttpServer.Api.Profile.VerifyName;
 import site.deercloud.identityverification.HttpServer.Web.*;
 import site.deercloud.identityverification.HttpServer.Api.*;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.MetaData;
@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,25 +149,22 @@ public class HttpServerManager {
     }
 
     public static JSONObject getBody(HttpExchange exchange) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"));
-        StringBuilder requestBodyContent = new StringBuilder();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            requestBodyContent.append(line);
-        }
-        MyLogger.debug(requestBodyContent.toString());
-        return JSONObject.parseObject(requestBodyContent.toString());
+        return JSONObject.parseObject(extractBodyStringFromExchange(exchange).toString());
     }
 
     public static JSONArray getBodyArray(HttpExchange exchange) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), "utf-8"));
+        return JSONObject.parseArray(extractBodyStringFromExchange(exchange).toString());
+    }
+
+    private static StringBuilder extractBodyStringFromExchange(HttpExchange exchange) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8));
         StringBuilder requestBodyContent = new StringBuilder();
         String line;
         while ((line = bufferedReader.readLine()) != null) {
             requestBodyContent.append(line);
         }
         MyLogger.debug(requestBodyContent.toString());
-        return JSONObject.parseArray(requestBodyContent.toString());
+        return  requestBodyContent;
     }
 
     public static Map<String,String> getQuery(HttpExchange exchange){
@@ -180,43 +178,45 @@ public class HttpServerManager {
         Arrays.stream(items).forEach(item ->{
             final String[] keyAndVal = item.split("=");
             if( keyAndVal.length == 2) {
-                try{
-                    final String key = URLDecoder.decode( keyAndVal[0],"utf8");
-                    final String val = URLDecoder.decode( keyAndVal[1],"utf8");
-                    MyLogger.debug(key + " : " + val);
-                    result.put(key,val);
-                }catch (UnsupportedEncodingException ignored) {}
+                final String key = URLDecoder.decode( keyAndVal[0], StandardCharsets.UTF_8);
+                final String val = URLDecoder.decode( keyAndVal[1], StandardCharsets.UTF_8);
+                MyLogger.debug(key + " : " + val);
+                result.put(key,val);
             }
         });
         return result;
     }
 
     // 权限验证与访问控制拦截
-    public static boolean authorizationCheck(HttpExchange exchange, User.ROLE role) {
+    public static WebToken authorizationCheck(HttpExchange exchange, User.ROLE role) {
         try {
             String token_str = exchange.getRequestHeaders().getFirst("Authorization");
             if (token_str == null) {
                 jsonResponse(exchange, 401, "你没有权限访问这个页面，请登录。", null);
-                return false;
+                return null;
             }
             WebToken webToken = WebToken.ParseWebTokenFromStr(token_str);
             if (webToken == null) {
                 jsonResponse(exchange, 401, "你没有权限访问这个页面，令牌错误，请重新登录。", null);
-                return false;
+                return null;
             }
             if (!WebTokenCache.isWebTokenValid(webToken)) {
                 jsonResponse(exchange, 401, "你没有权限访问这个页面，登录过期，请重新登录。", null);
-                return false;
+                return null;
             }
             User user = UserDAO.selectByUuid(webToken.userUUID);
+            if (user == null) {
+                jsonResponse(exchange, 403, "非法访问。", null);
+                return null;
+            }
             if (user.role.ordinal() < role.ordinal()) {
                 jsonResponse(exchange, 403, "你没有权限访问这个页面，权限不足。", null);
-                return false;
+                return null;
             }
-            return true;
+            return webToken;
         } catch (Exception e) {
             MyLogger.debug(e);
-            return false;
+            return null;
         }
     }
 
@@ -226,6 +226,6 @@ public class HttpServerManager {
 
     private HttpServer webServer;
     private HttpServer yagServer;
-    private ConfigManager configManager;
-    private static SessionTokenCache sessionTokenCache = new SessionTokenCache();
+    private final ConfigManager configManager;
+    private static final SessionTokenCache sessionTokenCache = new SessionTokenCache();
 }

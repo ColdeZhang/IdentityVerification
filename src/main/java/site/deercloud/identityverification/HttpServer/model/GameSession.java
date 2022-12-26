@@ -10,7 +10,6 @@ public class GameSession {
     }
 
     public void addAfkTime(long time) {
-        MyLogger.debug("addAfkTime:" + time);
         afkTime += time;
     }
 

@@ -11,22 +11,33 @@ import java.util.ArrayList;
 
 public class ProfileDAO {
     public static void createTable() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS profile (\n"
-                + "	uuid text PRIMARY KEY,\n"                           // UUID
-                + " belong_to text NOT NULL,\n"                         // 所属User
-                + "	name text NOT NULL,\n"                              // 玩家名字
-                + "	textures text NOT NULL,\n"                          // 材质
-                + "	textures_signature text NOT NULL,\n"                // 材质签名
-                + " uploadableTextures text ,\n"                // 可上传的材质
-                + " uploadableTextures_signature text ,\n"      // 可上传的材质签名
-                + "	update_time integer NOT NULL\n"                     // 数据更新时间
-                + ");";
+        // UUID
+        // 所属User
+        // 玩家名字
+        // 材质
+        // 材质签名
+        // 可上传的材质
+        // 可上传的材质签名
+        // 数据更新时间
+        // 是否是正版材质
+        String sql = """
+                CREATE TABLE IF NOT EXISTS profile (
+                    uuid text PRIMARY KEY,
+                    belong_to text NOT NULL,
+                	name text NOT NULL,
+                	textures text NOT NULL,
+                	textures_signature text NOT NULL,
+                    uploadableTextures text ,
+                    uploadableTextures_signature text ,
+                	update_time integer NOT NULL,
+                    is_genuine integer NOT NULL
+                );""";
         PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.execute();
     }
 
     public static void insert(Profile profile) throws SQLException {
-        String sql = "INSERT INTO profile(uuid,belong_to,name,textures,textures_signature,uploadableTextures,uploadableTextures_signature,update_time) VALUES(?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO profile(uuid,belong_to,name,textures,textures_signature,uploadableTextures,uploadableTextures_signature,update_time,is_genuine) VALUES(?,?,?,?,?,?,?,?,?)";
         PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, profile.uuid);
         preparedStatement.setString(2, profile.belongTo);
@@ -36,11 +47,12 @@ public class ProfileDAO {
         preparedStatement.setString(6, profile.uploadableTextures);
         preparedStatement.setString(7, profile.uploadableTextures_signature);
         preparedStatement.setLong(8, System.currentTimeMillis());
+        preparedStatement.setBoolean(9, profile.is_genuine);
         preparedStatement.executeUpdate();
     }
 
     public static void update(Profile profile) throws SQLException {
-        String sql = "UPDATE profile SET name = ?, textures = ?, textures_signature = ?, uploadableTextures = ?, uploadableTextures_signature = ?, update_time = ? WHERE uuid = ?";
+        String sql = "UPDATE profile SET name = ?, textures = ?, textures_signature = ?, uploadableTextures = ?, uploadableTextures_signature = ?, update_time = ?, is_genuine = ? WHERE uuid = ?";
         PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
         preparedStatement.setString(1, profile.name);
         preparedStatement.setString(2, profile.textures);
@@ -48,7 +60,8 @@ public class ProfileDAO {
         preparedStatement.setString(4, profile.uploadableTextures);
         preparedStatement.setString(5, profile.uploadableTextures_signature);
         preparedStatement.setLong(6, System.currentTimeMillis());
-        preparedStatement.setString(7, profile.uuid);
+        preparedStatement.setBoolean(7, profile.is_genuine);
+        preparedStatement.setString(8, profile.uuid);
         preparedStatement.executeUpdate();
     }
 
@@ -66,6 +79,7 @@ public class ProfileDAO {
             profile.textures_signature = resultSet.getString("textures_signature");
             profile.uploadableTextures = resultSet.getString("uploadableTextures");
             profile.uploadableTextures_signature = resultSet.getString("uploadableTextures_signature");
+            profile.is_genuine = resultSet.getBoolean("is_genuine");
             return profile;
         }
         return null;
@@ -86,6 +100,7 @@ public class ProfileDAO {
             profile.textures_signature = resultSet.getString("textures_signature");
             profile.uploadableTextures = resultSet.getString("uploadableTextures");
             profile.uploadableTextures_signature = resultSet.getString("uploadableTextures_signature");
+            profile.is_genuine = resultSet.getBoolean("is_genuine");
             profiles.add(profile);
             MyLogger.debug(profile.serialToJSONObject(true, true).toString());
         }
@@ -106,8 +121,16 @@ public class ProfileDAO {
             profile.textures_signature = resultSet.getString("textures_signature");
             profile.uploadableTextures = resultSet.getString("uploadableTextures");
             profile.uploadableTextures_signature = resultSet.getString("uploadableTextures_signature");
+            profile.is_genuine = resultSet.getBoolean("is_genuine");
             return profile;
         }
         return null;
+    }
+
+    public static void deleteByUUID(String uuid) throws SQLException {
+        String sql = "DELETE FROM profile WHERE uuid = ?";
+        PreparedStatement preparedStatement = SqlManager.session.prepareStatement(sql);
+        preparedStatement.setString(1, uuid);
+        preparedStatement.executeUpdate();
     }
 }

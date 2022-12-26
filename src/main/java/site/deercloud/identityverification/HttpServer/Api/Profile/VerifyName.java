@@ -1,4 +1,4 @@
-package site.deercloud.identityverification.HttpServer.Api.Register;
+package site.deercloud.identityverification.HttpServer.Api.Profile;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sun.net.httpserver.HttpExchange;

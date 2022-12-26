@@ -19,11 +19,9 @@ public class AFKTracker {
     private final Set<String> usedAFKCommand;
 
     private Long afkThresholdMs;
-    private final IdentityVerification plugin;
 
-    public AFKTracker(IdentityVerification plugin) {
-       this.plugin = plugin;
-       usedAFKCommand = new HashSet<>();
+    public AFKTracker() {
+        usedAFKCommand = new HashSet<>();
     }
 
     public long getAfkThreshold() {
@@ -78,7 +76,7 @@ public class AFKTracker {
             long removeAfkCommandEffect = usedAFKCommand.contains(playerUUID) ? getAfkThreshold() : 0;
             long timeAFK = time - lastMoved - removeAfkCommandEffect;
 
-            MyLogger.debug(player.getName() + " 本次挂机时间：" + timeAFK / 1000 / 60 + "分" + time / 1000 % 60 + "秒");
+            MyLogger.debug(player.getName() + " 本次挂机时间：" + timeAFK / 1000 / 60 + "分" + timeAFK / 1000 % 60 + "秒" + "("+timeAFK+")");
             GameSessionCache.getCacheSession(playerUUID).ifPresent(gameSession -> gameSession.addAfkTime(timeAFK));
             return timeAFK;
         } finally {

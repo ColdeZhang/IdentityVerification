@@ -13,6 +13,8 @@ public class Profile {
     public String uploadableTextures;
     public String uploadableTextures_signature;
 
+    public Boolean is_genuine;
+
     public JSONObject serialToJSONObject(Boolean with_properties,Boolean unsigned) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", uuid);

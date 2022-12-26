@@ -39,6 +39,11 @@ public class GetProfile implements HttpHandler {
                 Response.success_no_content(exchange);
                 return;
             }
+            // 如果是绑定的是正版账号信息，为了安全考虑不允许通过外置登录进入服务器
+            if (profile.is_genuine) {
+                Response.success_no_content(exchange);
+                return;
+            }
             MyLogger.debug("Profile 信息: " + profile.serialToJSONObject(true, unsigned).toString());
             Response.success_200(exchange, profile.serialToJSONObject(true, unsigned));
         } catch (IOException | SQLException e) {

@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static site.deercloud.identityverification.HttpServer.HttpServerManager.*;
+import static site.deercloud.identityverification.SQLite.UserDAO.checkPassword;
 
 public class Login implements HttpHandler {
 
@@ -38,15 +39,12 @@ public class Login implements HttpHandler {
                 jsonResponse(exchange, 500, "用户不存在", null);
                 return;
             }
-            if (!user.password.equals(password)) {
+            if (!checkPassword(username, password)) {
                 jsonResponse(exchange, 500, "用户名或密码错误", null);
                 return;
             }
             // 生成令牌
-            WebToken webToken = new WebToken();
-            webToken.userUUID = user.uuid;
-            webToken.token = RandomCode.NewCodeWithAlphabet(32);
-            webToken.expiresAt = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7;
+            WebToken webToken = WebToken.newWebToken(user.uuid);
             WebTokenCache.addWebToken(webToken);
             JSONObject response = new JSONObject();
             response.put("token", WebToken.ParseWebTokenToStr(webToken));
