@@ -1,16 +1,13 @@
 package site.deercloud.identityverification;
 
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import site.deercloud.identityverification.Controller.GameSessionCache;
 import site.deercloud.identityverification.HttpServer.model.Profile;
-import site.deercloud.identityverification.HttpServer.model.User;
 import site.deercloud.identityverification.SQLite.BanListDAO;
 import site.deercloud.identityverification.SQLite.ProfileDAO;
-import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.SQLite.WhiteListDAO;
 import site.deercloud.identityverification.Controller.ConfigManager;
 import site.deercloud.identityverification.Utils.MyLogger;
@@ -53,6 +50,7 @@ public class Events implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         IdentityVerification.afkTracker.performedAction(event.getPlayer(), System.currentTimeMillis());
         GameSessionCache.removeSession(UnsignedUUID.UnUUIDof(event.getPlayer()));
+        IdentityVerification.activeIndexManager.updateAllIndexRecord();
     }
 
     @EventHandler

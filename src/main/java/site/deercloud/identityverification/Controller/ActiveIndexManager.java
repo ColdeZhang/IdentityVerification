@@ -1,8 +1,10 @@
 package site.deercloud.identityverification.Controller;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerQuitEvent;
 import site.deercloud.identityverification.HttpServer.model.ActiveIndex;
 import site.deercloud.identityverification.HttpServer.model.PlayTimeStatics;
+import site.deercloud.identityverification.IdentityVerification;
 import site.deercloud.identityverification.SQLite.ActiveIndexDAO;
 import site.deercloud.identityverification.SQLite.PlayTimeDAO;
 import site.deercloud.identityverification.Utils.MyLogger;
@@ -55,11 +57,9 @@ public class ActiveIndexManager {
         return 0.0;
     }
 
-    public double updateIndex(Player player) {
+    public double updateIndex(String uuid) {
         // 更新基数
         updatePlayTimeThreshold();
-
-        String uuid = UnsignedUUID.UnUUIDof(player);
 
         long current = System.currentTimeMillis();
 
@@ -105,6 +105,24 @@ public class ActiveIndexManager {
             MyLogger.debug(e);
         }
         return 0.0;
+    }
+
+    public double updateIndex(Player player) {
+        return updateIndex(UnsignedUUID.UnUUIDof(player));
+    }
+
+    public void updateAllIndexRecord() {
+        if (IdentityVerification.instance.getServer().getOnlinePlayers().size() != 0) {
+            return;
+        }
+        try {
+            ArrayList<ActiveIndex> all_records = ActiveIndexDAO.selectActivityRecords();
+            for (ActiveIndex record : all_records) {
+                updateIndex(record.playerUuid);
+            }
+        }catch (Exception e) {
+            MyLogger.debug(e);
+        }
     }
 
 }
