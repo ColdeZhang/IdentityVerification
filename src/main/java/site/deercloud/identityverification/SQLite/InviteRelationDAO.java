@@ -32,7 +32,7 @@ public class InviteRelationDAO {
         prep.executeUpdate();
     }
 
-    public static String getInviterUUID(String inviteeUUID) throws SQLException {
+    public static String selectInviterByInvitee(String inviteeUUID) throws SQLException {
         String sql = "SELECT inviter_uuid FROM invite_relation WHERE invitee_uuid = ?";
         PreparedStatement prep = SqlManager.session.prepareStatement(sql);
         prep.setString(1, inviteeUUID);

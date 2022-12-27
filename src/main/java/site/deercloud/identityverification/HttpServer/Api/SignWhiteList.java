@@ -28,6 +28,10 @@ public class SignWhiteList implements HttpHandler {
             if (webToken == null) return;
 
             JSONObject jsonObject = getBody(exchange);
+            if (!jsonObject.containsKey("id") || !jsonObject.containsKey("name")) {
+                jsonResponse(exchange, 400, "参数错误", null);
+                return;
+            }
             String id = jsonObject.getString("id");                     // 身份证（实名认证用）
             String name = jsonObject.getString("name");                 // 真实姓名（实名认证用）
             if (id.length() != 18) {

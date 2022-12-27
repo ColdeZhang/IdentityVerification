@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import site.deercloud.identityverification.Controller.GameSessionCache;
+import site.deercloud.identityverification.HttpServer.model.BanRecord;
 import site.deercloud.identityverification.HttpServer.model.Profile;
 import site.deercloud.identityverification.SQLite.BanListDAO;
 import site.deercloud.identityverification.SQLite.ProfileDAO;
@@ -33,12 +34,11 @@ public class Events implements Listener {
                 return;
             }
         }
-        Integer ban_record_id = BanListDAO.isBanned(uuid);
-        if (ban_record_id > 0) {
-            String ban_reason = BanListDAO.getBanReasonById(ban_record_id);
+        BanRecord record = BanListDAO.isBanned(uuid);
+        if (record != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String ban_time = sdf.format(BanListDAO.getBanTimeById(ban_record_id));
-            player.kickPlayer("你已被封禁，请联系管理员。原因：[ " + ban_reason + " ]" + " 至：" + ban_time);
+            String ban_until_string = sdf.format(record.ban_time);
+            player.kickPlayer("你已被封禁，请联系管理员。原因：[ " + record.ban_reason + " ]" + " 至：" + ban_until_string);
             return;
         }
         GameSessionCache.addSession(UnsignedUUID.UnUUIDof(event.getPlayer()));

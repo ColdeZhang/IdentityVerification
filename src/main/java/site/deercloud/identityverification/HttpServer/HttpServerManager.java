@@ -10,10 +10,12 @@ import site.deercloud.identityverification.HttpServer.Api.GetOnlineProfile;
 import site.deercloud.identityverification.HttpServer.Api.Register.Registration;
 import site.deercloud.identityverification.HttpServer.Api.Profile.VerifyCode;
 import site.deercloud.identityverification.HttpServer.Api.Profile.VerifyName;
+import site.deercloud.identityverification.HttpServer.Api.Manage.Ban.NewBan;
 import site.deercloud.identityverification.HttpServer.Web.*;
 import site.deercloud.identityverification.HttpServer.Api.*;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.MetaData;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.authserver.*;
+import site.deercloud.identityverification.HttpServer.Yggdrasil.profiles.GetProfiles;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver.GetProfile;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver.HasJoined;
 import site.deercloud.identityverification.HttpServer.Yggdrasil.sessionserver.Join;
@@ -28,7 +30,6 @@ import site.deercloud.identityverification.Utils.MyLogger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -66,7 +67,7 @@ public class HttpServerManager {
             // 验证昵称是否可用
             webServer.createContext("/api/verifyName", new VerifyName());
             // 封禁玩家
-            webServer.createContext("/api/ban", new Ban());
+            webServer.createContext("/api/ban", new NewBan());
             // 离线用户注册
             webServer.createContext("/api/registration", new Registration());
             // 获取邀请者信息

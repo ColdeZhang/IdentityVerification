@@ -1,4 +1,4 @@
-package site.deercloud.identityverification.HttpServer.Api;
+package site.deercloud.identityverification.HttpServer.Yggdrasil.profiles;
 
 import com.alibaba.fastjson.JSONArray;
 import com.sun.net.httpserver.HttpExchange;

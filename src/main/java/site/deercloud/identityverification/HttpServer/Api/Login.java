@@ -26,6 +26,10 @@ public class Login implements HttpHandler {
         try {
             if (!requestHeader(exchange, "POST")) return;
             JSONObject request = getBody(exchange);
+            if (!request.containsKey("username") || !request.containsKey("password")) {
+                jsonResponse(exchange, 400, "参数错误", null);
+                return;
+            }
             String username = request.getString("username");
             String password = request.getString("password");
 

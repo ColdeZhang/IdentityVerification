@@ -25,6 +25,10 @@ public class BindProfile implements HttpHandler {
             if (webToken == null) return;
 
             JSONObject body = getBody(exchange);
+            if (!body.containsKey("profile_name")) {
+                jsonResponse(exchange, 400, "参数错误", null);
+                return;
+            }
             String name = body.getString("profile_name");
 
             String uuid = getUUIDFromRemote(name);
