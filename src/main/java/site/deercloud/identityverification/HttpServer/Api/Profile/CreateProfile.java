@@ -65,12 +65,12 @@ public class CreateProfile implements HttpHandler {
 
             // 创建邀请关系
             String inviteCodeOwner = InviteCodeDAO.getInviterUUID(inviteCode);
-            InviteRelationDAO.insert(inviteCode, profile.uuid, inviteCodeOwner);
-            MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + profile.uuid);
+            InviteRelationDAO.insert(inviteCode, webToken.userUUID, inviteCodeOwner);
+            MyLogger.debug("邀请关系已建立，邀请人：" + inviteCodeOwner + "，被邀请人：" + webToken.userUUID);
 
             // 标记邀请码已使用
             InviteCodeDAO.setUsed(inviteCode);
-            MyLogger.debug("邀请码" + inviteCode + "已标记为已使用，" + "使用人" + profile.uuid);
+            MyLogger.debug("邀请码" + inviteCode + "已标记为已使用，" + "使用人" + webToken.userUUID);
 
             jsonResponse(exchange, 200, "角色创建成功！", null);
         }catch (Exception e){

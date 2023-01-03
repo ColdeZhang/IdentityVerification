@@ -7,8 +7,10 @@ import org.bukkit.event.player.*;
 import site.deercloud.identityverification.Controller.GameSessionCache;
 import site.deercloud.identityverification.HttpServer.model.BanRecord;
 import site.deercloud.identityverification.HttpServer.model.Profile;
+import site.deercloud.identityverification.HttpServer.model.User;
 import site.deercloud.identityverification.SQLite.BanListDAO;
 import site.deercloud.identityverification.SQLite.ProfileDAO;
+import site.deercloud.identityverification.SQLite.UserDAO;
 import site.deercloud.identityverification.SQLite.WhiteListDAO;
 import site.deercloud.identityverification.Controller.ConfigManager;
 import site.deercloud.identityverification.Utils.MyLogger;
@@ -21,20 +23,25 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws SQLException {
         Player player = event.getPlayer();
-        String uuid = UnsignedUUID.UnUUIDof(player);
-        Profile profile = ProfileDAO.selectByUuid(uuid);
+        String profile_uuid = UnsignedUUID.UnUUIDof(player);
+        Profile profile = ProfileDAO.selectByUuid(profile_uuid);
+        if (profile == null) {
+            player.kickPlayer("请前往我们的官方网站 " + configManager.getHomePageUrl() + " 注册并绑定账号。");
+            return;
+        }
+        User user = UserDAO.selectByUuid(profile.belongTo);
+        if (user == null) {
+            player.kickPlayer("你可能注销了本服务器账号，请前往我们的官方网站 " + configManager.getHomePageUrl() + " 重新注册并绑定账号。");
+            return;
+        }
         if (IdentityVerification.configManager.getWhiteList()) {
-            if (profile == null) {
-                player.kickPlayer("请前往我们的官方网站 " + configManager.getHomePageUrl() + " 注册并绑定账号。");
-                return;
-            }
-            MyLogger.debug(profile.belongTo);
+            MyLogger.debug("尝试登录用户为 " + user.email + " 的玩家 " + player.getName());
             if (!WhiteListDAO.isUuidInWhiteList(profile.belongTo) && IdentityVerification.configManager.getWhiteList()) {
                 player.kickPlayer("你没有完成白名单实名认证，请前往 " + configManager.getHomePageUrl() + " 进行认证。");
                 return;
             }
         }
-        BanRecord record = BanListDAO.isBanned(uuid);
+        BanRecord record = BanListDAO.isBanned(user.uuid);
         if (record != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String ban_until_string = sdf.format(record.ban_time);
