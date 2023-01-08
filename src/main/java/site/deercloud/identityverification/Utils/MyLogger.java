@@ -7,26 +7,26 @@ import site.deercloud.identityverification.IdentityVerification;
 public class MyLogger {
 
     public static void info(String message) {
-        IdentityVerification.instance.getLogger().info(ChatColor.GREEN + "| " +message);
+        IdentityVerification.instance.getLogger().info(ChatColor.GREEN + " I | " +message);
     }
 
     public static void warn(String message) {
-        IdentityVerification.instance.getLogger().warning(ChatColor.YELLOW + "| " +message);
+        IdentityVerification.instance.getLogger().warning(ChatColor.YELLOW + " W | " +message);
     }
 
     public static void error(String message) {
-        IdentityVerification.instance.getLogger().severe(ChatColor.RED + "| " +message);
+        IdentityVerification.instance.getLogger().severe(ChatColor.RED + " E | " +message);
     }
 
     public static void debug(String message) {
         if (IdentityVerification.configManager.getDebug()) {
-            IdentityVerification.instance.getLogger().info(ChatColor.AQUA + "| " +message);
+            IdentityVerification.instance.getLogger().info(ChatColor.AQUA + " D | " +message);
         }
     }
 
     public static void debug(Exception e) {
         if (IdentityVerification.configManager.getDebug()) {
-            IdentityVerification.instance.getLogger().info(ChatColor.AQUA + "| " + e.getMessage());
+            IdentityVerification.instance.getLogger().info(ChatColor.AQUA + " D | " + e.getMessage());
             e.printStackTrace();
         }
     }
