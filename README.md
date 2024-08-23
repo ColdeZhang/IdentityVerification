@@ -1,4 +1,6 @@
 # IdentityVerification
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FColdeZhang%2FIdentityVerification.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FColdeZhang%2FIdentityVerification?ref=badge_shield)
+
 
  外置登录与实名认证（带web后台）
 
@@ -44,3 +46,7 @@
 - [ ] 材质（皮肤）上传/删除
 - [ ] 多角色创建删除
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FColdeZhang%2FIdentityVerification.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FColdeZhang%2FIdentityVerification?ref=badge_large)
